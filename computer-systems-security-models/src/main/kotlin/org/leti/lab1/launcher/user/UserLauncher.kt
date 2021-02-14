@@ -5,13 +5,18 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
+import org.leti.lab1.config.HEIGHT
+import org.leti.lab1.config.WIDTH
+
+const val USER_WINDOW_TITLE = "User Memory Stream"
+const val USER_WINDOW_FORM = "user-main-window.fxml"
 
 class UserLauncher : Application() {
     override fun start(primaryStage: Stage) {
-        val root = FXMLLoader.load<Parent>(javaClass.classLoader.getResource("user-main-window.fxml"))
+        val root = FXMLLoader.load<Parent>(javaClass.classLoader.getResource(USER_WINDOW_FORM))
         primaryStage.apply {
-            title = "User Memory Stream"
-            scene = Scene(root, 300.0, 275.0)
+            title = USER_WINDOW_TITLE
+            scene = Scene(root, WIDTH, HEIGHT)
         }
         primaryStage.show()
     }
