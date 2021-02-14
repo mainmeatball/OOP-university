@@ -24,7 +24,7 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'org.leti.lab1.MainKt'
+mainClassName = 'org.leti.lab1.UserMainKt'
 
 jar {
     manifest {
