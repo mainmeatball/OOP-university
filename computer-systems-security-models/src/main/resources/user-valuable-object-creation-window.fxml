@@ -1,0 +1,66 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox fx:controller="org.leti.lab1.controller.UserValuableObjectCreationWindowController"
+      stylesheets="css/user-valuable-object-creation-window.css"
+      xmlns:fx="http://javafx.com/fxml"
+      id="top-window"
+      alignment="TOP_CENTER">
+
+    <padding>
+        <Insets left="10" right="10"/>
+    </padding>
+
+    <Label id="navigation-label" text="Создание ценного объекта">
+        <font>
+            <Font size="20"/>
+        </font>
+    </Label>
+
+    <HBox spacing="10">
+        <padding>
+            <Insets top="10"/>
+        </padding>
+
+        <VBox alignment="TOP_CENTER" spacing="15">
+            <TreeView fx:id="directoryViewer"/>
+        </VBox>
+
+        <VBox>
+            <HBox >
+                <Label text="Введите имя файла: ">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                    <padding>
+                        <Insets right="10"/>
+                    </padding>
+                </Label>
+                <TextField HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <Label text="Текст: ">
+                <font>
+                    <Font size="14"/>
+                </font>
+                <padding>
+                    <Insets bottom="10"/>
+                </padding>
+            </Label>
+            <TextArea VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+
+    <GridPane>
+        <padding>
+            <Insets top="10"/>
+        </padding>
+
+        <Button fx:id="backToMenuButton" text="Назад в меню" onAction="#switchBackToMenu" GridPane.columnIndex="0"/>
+        <Button fx:id="createValuableObjectButton" text="Создать ценный объект" GridPane.columnIndex="1"/>
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" percentWidth="30"/>
+            <ColumnConstraints halignment="CENTER" percentWidth="70"/>
+        </columnConstraints>
+    </GridPane>
+</VBox>

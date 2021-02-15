@@ -8,8 +8,8 @@ import javafx.stage.Stage
 import org.leti.lab1.config.HEIGHT
 import org.leti.lab1.config.WIDTH
 
-const val INTRUDER_WINDOW_TITLE = "Intruder Memory Stream"
-const val INTRUDER_WINDOW_FORM = "intruder-main-window.fxml"
+private const val INTRUDER_WINDOW_TITLE = "Intruder Memory Stream"
+private const val INTRUDER_WINDOW_FORM = "intruder-main-window.fxml"
 
 class IntruderLauncher : Application() {
     override fun start(primaryStage: Stage) {

@@ -8,8 +8,8 @@ import javafx.stage.Stage
 import org.leti.lab1.config.HEIGHT
 import org.leti.lab1.config.WIDTH
 
-const val USER_WINDOW_TITLE = "User Memory Stream"
-const val USER_WINDOW_FORM = "user-main-window.fxml"
+private const val USER_WINDOW_TITLE = "User Memory Stream"
+private const val USER_WINDOW_FORM = "user-main-window.fxml"
 
 class UserLauncher : Application() {
     override fun start(primaryStage: Stage) {

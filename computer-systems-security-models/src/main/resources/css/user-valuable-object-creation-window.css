@@ -1,7 +1,9 @@
 .top-window {
     background-color: #EEEEEE;
+    -fx-font-family: Arial;
+    -fx-font-size: 20;
 }
 
-.label {
+.navigation-label {
     -fx-font-size: 30;
 }
