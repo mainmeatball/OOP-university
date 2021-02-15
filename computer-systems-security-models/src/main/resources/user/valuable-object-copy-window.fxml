@@ -1,0 +1,70 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox fx:controller="org.leti.lab1.controller.user.ValuableObjectCopyController"
+      xmlns:fx="http://javafx.com/fxml"
+      id="top-window"
+      alignment="TOP_CENTER">
+
+    <padding>
+        <Insets left="10" right="10"/>
+    </padding>
+
+    <Label id="navigation-label" text="Копирование ценного объекта">
+        <font>
+            <Font size="20"/>
+        </font>
+    </Label>
+
+    <HBox spacing="10">
+        <padding>
+            <Insets top="10"/>
+        </padding>
+
+        <TreeView fx:id="directoryViewer"/>
+        <VBox alignment="CENTER">
+            <padding>
+                <Insets left="100"/>
+            </padding>
+            <VBox>
+                <Label text="Введите имя файла для копирования">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                    <padding>
+                        <Insets right="10"/>
+                    </padding>
+                </Label>
+                <TextField fx:id="fileName"/>
+            </VBox>
+            <VBox>
+                <padding>
+                    <Insets top="15"/>
+                </padding>
+                <Label text="Введите директорию назначения">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10"/>
+                    </padding>
+                </Label>
+                <TextField fx:id="directoryName"/>
+            </VBox>
+        </VBox>
+    </HBox>
+
+    <GridPane>
+        <padding>
+            <Insets top="10"/>
+        </padding>
+
+        <Button fx:id="backToMenuButton" text="Назад в меню" onAction="#switchBackToMenu" GridPane.columnIndex="0"/>
+        <Button fx:id="copyValuableObjectButton" text="Копировать ценный объект" onAction="#copyValuableObject" GridPane.columnIndex="1"/>
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" percentWidth="40"/>
+            <ColumnConstraints halignment="CENTER" percentWidth="60"/>
+        </columnConstraints>
+    </GridPane>
+</VBox>

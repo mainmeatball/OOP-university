@@ -1,4 +1,4 @@
-package org.leti.lab1.controller
+package org.leti.lab1.controller.user
 
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
@@ -6,10 +6,10 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.control.Button
 
-private const val VALUABLE_OBJECT_CREATION_WINDOW = "user-valuable-object-creation-window.fxml"
-private const val VALUABLE_OBJECT_COPY_WINDOW = "user-valuable-object-copy-window.fxml"
+private const val VALUABLE_OBJECT_CREATION_WINDOW = "user/valuable-object-creation-window.fxml"
+private const val VALUABLE_OBJECT_COPY_WINDOW = "user/valuable-object-copy-window.fxml"
 
-class UserMainWindowController {
+class MainMenuController {
 
     @FXML
     lateinit var openValuableObjectCreationSceneButton: Button
