@@ -17,32 +17,22 @@
         </font>
     </Label>
 
-    <HBox spacing="10">
+    <GridPane hgap="10">
         <padding>
             <Insets top="10"/>
         </padding>
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" percentWidth="40"/>
+            <ColumnConstraints halignment="CENTER" percentWidth="60"/>
+        </columnConstraints>
 
-        <TreeView fx:id="directoryViewer"/>
-        <VBox alignment="CENTER">
-            <padding>
-                <Insets left="100"/>
-            </padding>
-            <VBox>
-                <Label text="Введите имя файла для копирования">
-                    <font>
-                        <Font size="14"/>
-                    </font>
-                    <padding>
-                        <Insets right="10"/>
-                    </padding>
-                </Label>
-                <TextField fx:id="fileName"/>
-            </VBox>
+        <TreeView fx:id="directoryViewer" GridPane.columnIndex="0"/>
+        <VBox alignment="CENTER" GridPane.columnIndex="1">
             <VBox>
                 <padding>
                     <Insets top="15"/>
                 </padding>
-                <Label text="Введите директорию назначения">
+                <Label text="Выберите файл для копирования">
                     <font>
                         <Font size="14"/>
                     </font>
@@ -50,21 +40,55 @@
                         <Insets bottom="10"/>
                     </padding>
                 </Label>
-                <TextField fx:id="directoryName"/>
+                <HBox spacing="10">
+                    <TextField fx:id="sourceFileName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    <Button text="..." onAction="#chooseSourceFile"/>
+                </HBox>
+            </VBox>
+            <VBox>
+                <padding>
+                    <Insets top="15"/>
+                </padding>
+                <Label text="Выберите директорию назначения">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10"/>
+                    </padding>
+                </Label>
+                <HBox spacing="10">
+                    <TextField fx:id="targetDirectoryName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    <Button text="..." onAction="#chooseTargetDirectory"/>
+                </HBox>
+            </VBox>
+            <VBox>
+                <padding>
+                    <Insets top="15"/>
+                </padding>
+                <Label text="Введите имя целевого файла">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                    <padding>
+                        <Insets bottom="10"/>
+                    </padding>
+                </Label>
+                <TextField fx:id="targetFileName"/>
             </VBox>
         </VBox>
-    </HBox>
+    </GridPane>
 
     <GridPane>
         <padding>
             <Insets top="10"/>
         </padding>
-
-        <Button fx:id="backToMenuButton" text="Назад в меню" onAction="#switchBackToMenu" GridPane.columnIndex="0"/>
-        <Button fx:id="copyValuableObjectButton" text="Копировать ценный объект" onAction="#copyValuableObject" GridPane.columnIndex="1"/>
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" percentWidth="40"/>
             <ColumnConstraints halignment="CENTER" percentWidth="60"/>
         </columnConstraints>
+
+        <Button fx:id="backToMenuButton" text="Назад в меню" onAction="#switchBackToMenu" GridPane.columnIndex="0"/>
+        <Button fx:id="copyValuableObjectButton" text="Копировать ценный объект" onAction="#copyValuableObject" GridPane.columnIndex="1"/>
     </GridPane>
 </VBox>
