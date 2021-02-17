@@ -1,5 +1,6 @@
 package org.leti.lab1.service
 
+import org.leti.lab1.component.showErrorPopup
 import org.leti.lab1.component.showPopup
 import java.io.IOException
 import java.nio.file.Files
@@ -18,7 +19,7 @@ class FileCopyService {
             val targetFile = Paths.get(pathToTargetFile)
             Files.copy(sourceFile, targetFile)
         } catch (e: IOException) {
-            showPopup("Ошибка.\n $e")
+            showErrorPopup(e)
             return
         }
         showPopup("Копирование прошло успешно")
