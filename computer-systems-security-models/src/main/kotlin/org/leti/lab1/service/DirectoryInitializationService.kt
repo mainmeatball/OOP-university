@@ -9,11 +9,12 @@ class DirectoryInitializationService {
 
     fun initialize(directoryViewer: TreeView<String>, directory: String) {
         val dir = File(directory)
-        directoryViewer.root = getNodesForDirectory(dir)
+        directoryViewer.root = getNodesForDirectory(dir, true)
     }
 
-    private fun getNodesForDirectory(directory: File): TreeItem<String> {
-        val root = TreeItem(directory.name).apply {
+    private fun getNodesForDirectory(directory: File, isRoot: Boolean = false): TreeItem<String> {
+        val dirName = if (isRoot) directory.absolutePath else directory.name
+        val root = TreeItem(dirName).apply {
             isExpanded = true
         }
         directory.listFiles()?.let {

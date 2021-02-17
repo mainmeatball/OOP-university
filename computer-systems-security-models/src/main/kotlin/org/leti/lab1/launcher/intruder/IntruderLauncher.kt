@@ -9,7 +9,7 @@ import org.leti.lab1.config.HEIGHT
 import org.leti.lab1.config.WIDTH
 
 private const val INTRUDER_WINDOW_TITLE = "Intruder Memory Stream"
-private const val INTRUDER_WINDOW_FORM = "intruder/main-menu.fxml"
+private const val INTRUDER_WINDOW_FORM = "intruder/intruder-window.fxml"
 
 class IntruderLauncher : Application() {
     override fun start(primaryStage: Stage) {

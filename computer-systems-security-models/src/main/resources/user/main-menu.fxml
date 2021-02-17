@@ -13,8 +13,7 @@
         </font>
     </Label>
 
-    <VBox alignment="CENTER"
-          spacing="10">
+    <VBox alignment="CENTER" spacing="10">
         <Button fx:id="openValuableObjectCreationSceneButton" text="Создать ценный объект" onAction="#openValuableObjectCreationScene"/>
         <Button fx:id="openValuableObjectCopySceneButton" text="Скопировать ценный объект" onAction="#openValuableObjectCopyScene"/>
     </VBox>
