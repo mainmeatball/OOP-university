@@ -1,5 +1,6 @@
 package org.leti.lab1.component
 
+import javafx.application.Platform
 import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.Button
@@ -19,10 +20,12 @@ fun showPopup(message: String, buttonText: String = "OK") {
         alignment = Pos.CENTER
     }
     val stageScene = Scene(vBox, 400.0, 250.0)
-    Stage().apply {
-        scene = stageScene
-        initModality(Modality.WINDOW_MODAL)
-        show()
+    Platform.runLater {
+        Stage().apply {
+            scene = stageScene
+            initModality(Modality.WINDOW_MODAL)
+            show()
+        }
     }
 }
 
