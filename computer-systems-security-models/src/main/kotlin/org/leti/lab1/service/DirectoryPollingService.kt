@@ -3,11 +3,8 @@ package org.leti.lab1.service
 import com.sun.nio.file.SensitivityWatchEventModifier
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.nio.file.FileSystems
-import java.nio.file.Path
-import java.nio.file.Paths
+import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
-import java.nio.file.WatchKey
 
 
 class DirectoryPollingService(dir: String) {
@@ -19,11 +16,9 @@ class DirectoryPollingService(dir: String) {
         register(Paths.get(dir))
     }
 
-    fun startPolling(action: () -> Unit) {
+    fun startPolling(action: (Path, WatchEvent.Kind<out Any>) -> Unit) {
         GlobalScope.launch {
-            processEvents {
-                action()
-            }
+            processEvents(action)
         }
     }
 
@@ -32,7 +27,7 @@ class DirectoryPollingService(dir: String) {
         keys[key] = dir
     }
 
-    private fun processEvents(action: () -> Unit) {
+    private fun processEvents(action: (Path, WatchEvent.Kind<out Any>) -> Unit) {
         while (true) {
             val key = try {
                 watcher.take()
@@ -49,7 +44,11 @@ class DirectoryPollingService(dir: String) {
                 if (kind === OVERFLOW) {
                     continue
                 }
-                action()
+
+                val eventContext = cast<Path>(event).context()
+                val file = directory.resolve(eventContext)
+
+                action(file, kind)
             }
 
             val valid = key.reset()
@@ -61,4 +60,7 @@ class DirectoryPollingService(dir: String) {
             }
         }
     }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> cast(event: WatchEvent<*>) = event as WatchEvent<T>
 }

@@ -4,6 +4,7 @@ import org.leti.lab1.component.showErrorPopup
 import org.leti.lab1.component.showPopup
 import java.io.IOException
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 
@@ -16,12 +17,31 @@ class FileCopyService {
                 showPopup("Исходный файл $pathToSourceFile не существует.")
                 return
             }
+            copyFile(sourceFile, pathToTargetFile)
+        } catch (e: IOException) {
+            showErrorPopup(e)
+            return
+        }
+    }
+
+    fun copyFileWithoutNotification(sourceFile: Path, pathToTargetFile: String) {
+        doCopyFile(sourceFile, pathToTargetFile, false)
+    }
+
+    fun copyFile(sourceFile: Path, pathToTargetFile: String) {
+        doCopyFile(sourceFile, pathToTargetFile, true)
+    }
+
+    private fun doCopyFile(sourceFile: Path, pathToTargetFile: String, withNotification: Boolean) {
+        try {
             val targetFile = Paths.get(pathToTargetFile)
             Files.copy(sourceFile, targetFile)
         } catch (e: IOException) {
             showErrorPopup(e)
             return
         }
-        showPopup("Копирование прошло успешно")
+        if (withNotification) {
+            showPopup("Копирование прошло успешно")
+        }
     }
 }
