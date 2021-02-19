@@ -10,7 +10,7 @@ import org.leti.lab1.config.INTRUDER_DIR
 import org.leti.lab1.config.PUBLIC_DIR
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.DirectoryPollingService
-import org.leti.lab1.service.FileCopyService
+import org.leti.lab1.service.FileService
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds.*
@@ -32,7 +32,7 @@ class IntruderController {
 
     private val directoryInitializationService = DirectoryInitializationService()
 
-    private val fileCopyService = FileCopyService()
+    private val fileService = FileService()
 
     private val directoryPollingService = DirectoryPollingService(PUBLIC_DIR)
 
@@ -44,7 +44,7 @@ class IntruderController {
     private fun copyValuableObject(event: ActionEvent) {
         val absoluteSourcePath = PUBLIC_DIR + File.separator + sourceDirectoryViewer.selectionModel.selectedItem.value
         val absoluteTargetPath = INTRUDER_DIR + File.separator + sourceDirectoryViewer.selectionModel.selectedItem.value
-        fileCopyService.copyFile(absoluteSourcePath, absoluteTargetPath)
+        fileService.copyThroughClipboardWithNotification(absoluteSourcePath, absoluteTargetPath)
         reloadIntruderDirectory()
         event.consume()
     }
@@ -72,7 +72,7 @@ class IntruderController {
             return
         }
         val absoluteTargetPath = INTRUDER_DIR + File.separator + sourceFile.fileName
-        fileCopyService.copyFileWithoutNotification(sourceFile, absoluteTargetPath)
+        fileService.copyThroughClipboard(sourceFile, absoluteTargetPath)
         reloadIntruderDirectory()
     }
 

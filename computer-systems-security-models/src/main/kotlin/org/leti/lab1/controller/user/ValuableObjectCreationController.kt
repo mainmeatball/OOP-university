@@ -5,10 +5,9 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.control.*
-import javafx.stage.DirectoryChooser
 import org.leti.lab1.config.PRIVATE_DIR
 import org.leti.lab1.service.DirectoryInitializationService
-import org.leti.lab1.service.FileCreationService
+import org.leti.lab1.service.FileService
 import java.io.File
 
 private const val MAIN_MENU = "user/main-menu.fxml"
@@ -30,7 +29,7 @@ class ValuableObjectCreationController {
     @FXML
     lateinit var createValuableObjectButton: Button
 
-    private val fileCreationService = FileCreationService()
+    private val fileService = FileService()
 
     private val directoryInitializationService = DirectoryInitializationService()
 
@@ -44,7 +43,7 @@ class ValuableObjectCreationController {
     @FXML
     private fun createValuableObject(event: ActionEvent) {
         val privateDir = PRIVATE_DIR
-        fileCreationService.createFile(privateDir + File.separator + fileName.text, textArea.text)
+        fileService.createFile(privateDir + File.separator + fileName.text, textArea.text)
         reloadDirectoryTree(privateDir)
         clearFields(fileName, textArea)
         event.consume()
