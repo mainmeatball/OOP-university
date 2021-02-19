@@ -5,6 +5,7 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.CheckBox?>
 <VBox fx:controller="org.leti.lab1.controller.intruder.IntruderController"
       xmlns:fx="http://javafx.com/fxml"
       id="top-window"
@@ -24,6 +25,11 @@
             <TreeView fx:id="sourceDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
             <TreeView fx:id="intruderDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
         </HBox>
-        <Button fx:id="copyValuableObjectButton" text="Копировать" onAction="#copyValuableObject"/>
+        <HBox spacing="40" alignment="CENTER">
+            <HBox>
+                <CheckBox fx:id="automaticCopyCheckbox" text="Автоматическое копирование"/>
+            </HBox>
+            <Button fx:id="copyValuableObjectButton" text="Копировать" onAction="#copyValuableObject"/>
+        </HBox>
     </VBox>
 </VBox>

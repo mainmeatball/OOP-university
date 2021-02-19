@@ -4,13 +4,17 @@ import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
 import javafx.scene.control.TreeView
 import org.leti.lab1.config.INTRUDER_DIR
 import org.leti.lab1.config.PUBLIC_DIR
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.DirectoryPollingService
-import org.leti.lab1.service.FileCopyService
+import org.leti.lab1.service.FileService
 import java.io.File
+import java.nio.file.Path
+import java.nio.file.StandardWatchEventKinds.*
+import java.nio.file.WatchEvent
 
 class IntruderController {
 
@@ -23,17 +27,24 @@ class IntruderController {
     @FXML
     lateinit var copyValuableObjectButton: Button
 
+    @FXML
+    lateinit var automaticCopyCheckbox: CheckBox
+
     private val directoryInitializationService = DirectoryInitializationService()
 
-    private val fileCopyService = FileCopyService()
+    private val fileService = FileService()
 
     private val directoryPollingService = DirectoryPollingService(PUBLIC_DIR)
+
+    private val eventKindMap = mapOf(
+        ENTRY_CREATE to ::copySourceFile
+    )
 
     @FXML
     private fun copyValuableObject(event: ActionEvent) {
         val absoluteSourcePath = PUBLIC_DIR + File.separator + sourceDirectoryViewer.selectionModel.selectedItem.value
         val absoluteTargetPath = INTRUDER_DIR + File.separator + sourceDirectoryViewer.selectionModel.selectedItem.value
-        fileCopyService.copyFile(absoluteSourcePath, absoluteTargetPath)
+        fileService.copyThroughClipboardWithNotification(absoluteSourcePath, absoluteTargetPath)
         reloadIntruderDirectory()
         event.consume()
     }
@@ -41,13 +52,27 @@ class IntruderController {
     @FXML
     fun initialize() {
         reloadDirectories()
-        directoryPollingService.startPolling {
-            Platform.runLater { reloadSourceDirectory() }
-        }
+        directoryPollingService.startPolling(::reloadSourceDirectory)
     }
 
     private fun reloadDirectories() {
         reloadSourceDirectory()
+        reloadIntruderDirectory()
+    }
+
+    private fun reloadSourceDirectory(sourceFile: Path, eventKind: WatchEvent.Kind<out Any>) {
+        Platform.runLater {
+            reloadSourceDirectory()
+            eventKindMap[eventKind]?.invoke(sourceFile)
+        }
+    }
+
+    private fun copySourceFile(sourceFile: Path) {
+        if (!automaticCopyCheckbox.isSelected) {
+            return
+        }
+        val absoluteTargetPath = INTRUDER_DIR + File.separator + sourceFile.fileName
+        fileService.copyThroughClipboard(sourceFile, absoluteTargetPath)
         reloadIntruderDirectory()
     }
 

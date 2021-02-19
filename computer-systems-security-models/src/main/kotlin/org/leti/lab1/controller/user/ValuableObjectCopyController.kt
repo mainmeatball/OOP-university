@@ -9,12 +9,10 @@ import javafx.scene.control.TextField
 import javafx.scene.control.TreeView
 import javafx.stage.DirectoryChooser
 import javafx.stage.FileChooser
-import javafx.stage.Stage
-import org.leti.lab1.component.showPopup
 import org.leti.lab1.config.PRIVATE_DIR
 import org.leti.lab1.config.PUBLIC_DIR
 import org.leti.lab1.service.DirectoryInitializationService
-import org.leti.lab1.service.FileCopyService
+import org.leti.lab1.service.FileService
 import java.io.File
 
 private const val MAIN_MENU = "user/main-menu.fxml"
@@ -41,7 +39,7 @@ class ValuableObjectCopyController {
 
     private val directoryInitializationService = DirectoryInitializationService()
 
-    private val fileCopyService = FileCopyService()
+    private val fileService = FileService()
 
     @FXML
     private fun switchBackToMenu(event: ActionEvent) {
@@ -52,7 +50,8 @@ class ValuableObjectCopyController {
 
     @FXML
     private fun copyValuableObject(event: ActionEvent) {
-        fileCopyService.copyFile(sourceFileName.text, targetDirectoryName.text + File.separator + targetFileName.text)
+        val pathToTargetFile = targetDirectoryName.text + File.separator + targetFileName.text
+        fileService.copyWithNotification(sourceFileName.text, pathToTargetFile)
         reloadDirectoryTree()
         event.consume()
     }
