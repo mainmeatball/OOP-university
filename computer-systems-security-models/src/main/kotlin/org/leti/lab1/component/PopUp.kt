@@ -12,6 +12,9 @@ import javafx.stage.Stage
 import java.lang.Exception
 
 
+private const val POPUP_WIDTH = 400.0
+private const val POPUP_HEIGHT = 250.0
+
 fun showPopup(message: String, buttonText: String = "OK") {
     val messageLabel = Label(message)
     val confirmButton = createCloseButton(buttonText)
@@ -19,7 +22,7 @@ fun showPopup(message: String, buttonText: String = "OK") {
         spacing = 30.0
         alignment = Pos.CENTER
     }
-    val stageScene = Scene(vBox, 400.0, 250.0)
+    val stageScene = Scene(vBox, POPUP_WIDTH, POPUP_HEIGHT)
     Platform.runLater {
         Stage().apply {
             scene = stageScene
