@@ -7,13 +7,13 @@ import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
 
 
-class DirectoryPollingService(dir: String) {
+class DirectoryPollingService(pathToDirectory: String) {
 
-    private var watcher = FileSystems.getDefault().newWatchService()
-    private var keys = mutableMapOf<WatchKey, Path>()
+    private var watchService = FileSystems.getDefault().newWatchService()
+    private var watchKeys = mutableMapOf<WatchKey, Path>()
 
     init {
-        register(Paths.get(dir))
+        register(Paths.get(pathToDirectory))
     }
 
     fun startPolling(action: (Path, WatchEvent.Kind<out Any>) -> Unit) {
@@ -22,43 +22,45 @@ class DirectoryPollingService(dir: String) {
         }
     }
 
-    private fun register(dir: Path) {
-        val key = dir.register(watcher, arrayOf(ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY), SensitivityWatchEventModifier.HIGH)
-        keys[key] = dir
+    private fun register(directory: Path) {
+        val watchKey = directory.register(watchService, arrayOf(ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY), SensitivityWatchEventModifier.HIGH)
+        watchKeys[watchKey] = directory
     }
 
-    private fun processEvents(action: (Path, WatchEvent.Kind<out Any>) -> Unit) {
+    private fun processEvents(doAction: (Path, WatchEvent.Kind<out Any>) -> Unit) {
         while (true) {
-            val key = try {
-                watcher.take()
-            } catch (x: InterruptedException) {
-                return
-            }
-            val directory = keys[key]
+            val watchKey = receiveSignal() ?: return
+            val directory = watchKeys[watchKey]
             if (directory == null) {
                 println("WatchKey is not recognized")
                 continue
             }
-            for (event in key.pollEvents()) {
-                val kind = event.kind()
-                if (kind === OVERFLOW) {
+            for (watchEvent in watchKey.pollEvents()) {
+                val watchEventKind = watchEvent.kind()
+                if (watchEventKind === OVERFLOW) {
                     continue
                 }
 
-                val eventContext = cast<Path>(event).context()
+                val eventContext = cast<Path>(watchEvent).context()
                 val file = directory.resolve(eventContext)
 
-                action(file, kind)
+                doAction(file, watchEventKind)
             }
 
-            val valid = key.reset()
+            val valid = watchKey.reset()
             if (!valid) {
-                keys.remove(key)
-                if (keys.isEmpty()) {
+                watchKeys.remove(watchKey)
+                if (watchKeys.isEmpty()) {
                     break
                 }
             }
         }
+    }
+
+    private fun receiveSignal(): WatchKey? = try {
+        watchService.take()
+    } catch (x: InterruptedException) {
+        null
     }
 
     @Suppress("UNCHECKED_CAST")

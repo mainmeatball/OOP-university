@@ -2,10 +2,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.TreeView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.CheckBox?>
+<?import org.leti.lab1.component.DirectoryViewer?>
 <VBox fx:controller="org.leti.lab1.controller.intruder.IntruderController"
       xmlns:fx="http://javafx.com/fxml"
       id="top-window"
@@ -22,8 +22,8 @@
 
     <VBox alignment="CENTER" spacing="10">
         <HBox VBox.vgrow="ALWAYS" maxHeight="Infinity" spacing="10">
-            <TreeView fx:id="sourceDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            <TreeView fx:id="intruderDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <DirectoryViewer fx:id="sourceDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <DirectoryViewer fx:id="intruderDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
         </HBox>
         <HBox spacing="40" alignment="CENTER">
             <HBox>

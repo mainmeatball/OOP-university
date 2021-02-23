@@ -5,7 +5,7 @@ import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.CheckBox
-import javafx.scene.control.TreeView
+import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.config.INTRUDER_DIR
 import org.leti.lab1.config.PUBLIC_DIR
 import org.leti.lab1.service.DirectoryInitializationService
@@ -13,16 +13,16 @@ import org.leti.lab1.service.DirectoryPollingService
 import org.leti.lab1.service.FileService
 import java.io.File
 import java.nio.file.Path
-import java.nio.file.StandardWatchEventKinds.*
+import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.WatchEvent
 
 class IntruderController {
 
     @FXML
-    lateinit var sourceDirectoryViewer: TreeView<String>
+    lateinit var sourceDirectoryViewer: DirectoryViewer
 
     @FXML
-    lateinit var intruderDirectoryViewer: TreeView<String>
+    lateinit var intruderDirectoryViewer: DirectoryViewer
 
     @FXML
     lateinit var copyValuableObjectButton: Button
@@ -84,7 +84,7 @@ class IntruderController {
         reloadDirectoryTree(intruderDirectoryViewer, INTRUDER_DIR)
     }
 
-    private fun reloadDirectoryTree(directoryViewer: TreeView<String>, path: String) {
+    private fun reloadDirectoryTree(directoryViewer: DirectoryViewer, path: String) {
         directoryInitializationService.initialize(directoryViewer, path)
     }
 }

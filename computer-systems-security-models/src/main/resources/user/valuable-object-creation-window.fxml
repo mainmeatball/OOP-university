@@ -2,6 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import org.leti.lab1.component.DirectoryViewer?>
 <VBox fx:controller="org.leti.lab1.controller.user.ValuableObjectCreationController"
       xmlns:fx="http://javafx.com/fxml"
       id="top-window"
@@ -26,7 +27,7 @@
             <ColumnConstraints halignment="CENTER" percentWidth="60"/>
         </columnConstraints>
 
-        <TreeView fx:id="directoryViewer" GridPane.columnIndex="0"/>
+        <DirectoryViewer fx:id="directoryViewer" GridPane.columnIndex="0"/>
         <VBox GridPane.columnIndex="1">
             <HBox>
                 <Label text="Введите имя файла: ">

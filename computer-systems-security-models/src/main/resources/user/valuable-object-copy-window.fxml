@@ -2,13 +2,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import org.leti.lab1.component.DirectoryViewer?>
 <VBox fx:controller="org.leti.lab1.controller.user.ValuableObjectCopyController"
       xmlns:fx="http://javafx.com/fxml"
       id="top-window"
       alignment="TOP_CENTER">
 
     <padding>
-        <Insets left="10" right="10"/>
+        <Insets topRightBottomLeft="10"/>
     </padding>
 
     <Label id="navigation-label" text="Копирование ценного объекта">
@@ -26,42 +27,43 @@
             <ColumnConstraints halignment="CENTER" percentWidth="60"/>
         </columnConstraints>
 
-        <TreeView fx:id="directoryViewer" GridPane.columnIndex="0"/>
+        <DirectoryViewer fx:id="sourceDirectoryViewer" GridPane.columnIndex="0"/>
         <VBox alignment="CENTER" GridPane.columnIndex="1">
-            <VBox>
-                <padding>
-                    <Insets top="15"/>
-                </padding>
-                <Label text="Выберите файл для копирования">
-                    <font>
-                        <Font size="14"/>
-                    </font>
-                    <padding>
-                        <Insets bottom="10"/>
-                    </padding>
-                </Label>
-                <HBox spacing="10">
-                    <TextField fx:id="sourceFileName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                    <Button text="..." onAction="#chooseSourceFile"/>
-                </HBox>
-            </VBox>
-            <VBox>
-                <padding>
-                    <Insets top="15"/>
-                </padding>
-                <Label text="Выберите директорию назначения">
-                    <font>
-                        <Font size="14"/>
-                    </font>
-                    <padding>
-                        <Insets bottom="10"/>
-                    </padding>
-                </Label>
-                <HBox spacing="10">
-                    <TextField fx:id="targetDirectoryName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                    <Button text="..." onAction="#chooseTargetDirectory"/>
-                </HBox>
-            </VBox>
+            <DirectoryViewer fx:id="targetDirectoryViewer" GridPane.columnIndex="1"/>
+<!--            <VBox>-->
+<!--                <padding>-->
+<!--                    <Insets top="15"/>-->
+<!--                </padding>-->
+<!--                <Label text="Выберите файл для копирования">-->
+<!--                    <font>-->
+<!--                        <Font size="14"/>-->
+<!--                    </font>-->
+<!--                    <padding>-->
+<!--                        <Insets bottom="10"/>-->
+<!--                    </padding>-->
+<!--                </Label>-->
+<!--                <HBox spacing="10">-->
+<!--                    <TextField fx:id="sourceFileName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>-->
+<!--                    <Button text="..." onAction="#chooseSourceFile"/>-->
+<!--                </HBox>-->
+<!--            </VBox>-->
+<!--            <VBox>-->
+<!--                <padding>-->
+<!--                    <Insets top="15"/>-->
+<!--                </padding>-->
+<!--                <Label text="Выберите директорию назначения">-->
+<!--                    <font>-->
+<!--                        <Font size="14"/>-->
+<!--                    </font>-->
+<!--                    <padding>-->
+<!--                        <Insets bottom="10"/>-->
+<!--                    </padding>-->
+<!--                </Label>-->
+<!--                <HBox spacing="10">-->
+<!--                    <TextField fx:id="targetDirectoryName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>-->
+<!--                    <Button text="..." onAction="#chooseTargetDirectory"/>-->
+<!--                </HBox>-->
+<!--            </VBox>-->
             <VBox>
                 <padding>
                     <Insets top="15"/>

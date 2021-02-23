@@ -1,9 +1,10 @@
 package org.leti.lab1.service
 
-import javafx.scene.input.Clipboard
-import javafx.scene.input.ClipboardContent
 import org.leti.lab1.component.showErrorPopup
 import org.leti.lab1.component.showPopup
+import org.leti.lab1.mechanism.copy.ClipboardCopyMechanism
+import org.leti.lab1.mechanism.copy.CopyMechanism
+import org.leti.lab1.mechanism.copy.StraightCopyMechanism
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -11,6 +12,10 @@ import java.nio.file.Paths
 
 
 class FileService {
+
+    private val clipboardCopyMechanism = ClipboardCopyMechanism()
+
+    private val straightCopyMechanism = StraightCopyMechanism()
 
     fun createFile(pathToFile: String, content: String) {
         try {
@@ -27,72 +32,58 @@ class FileService {
     }
 
     fun copyThroughClipboard(pathToSourceFile: String, pathToTargetFile: String) {
-        doCopy(pathToSourceFile, pathToTargetFile, false, ::doCopyThroughClipboard)
+        doCopy(pathToSourceFile, pathToTargetFile, false, clipboardCopyMechanism)
     }
 
     fun copyThroughClipboard(sourceFile: Path, pathToTargetFile: String) {
-        doCopy(pathToTargetFile, false) { targetFile ->
-            doCopyThroughClipboard(sourceFile, targetFile)
-        }
+        doCopy(sourceFile, pathToTargetFile, false, clipboardCopyMechanism)
     }
 
     fun copyThroughClipboardWithNotification(pathToSourceFile: String, pathToTargetFile: String) {
-        doCopy(pathToSourceFile, pathToTargetFile, true, ::doCopyThroughClipboard)
+        doCopy(pathToSourceFile, pathToTargetFile, true, clipboardCopyMechanism)
     }
 
     fun copyThroughClipboardWithNotification(sourceFile: Path, pathToTargetFile: String) {
-        doCopy(pathToTargetFile, true) { targetFile ->
-            doCopyThroughClipboard(sourceFile, targetFile)
-        }
-    }
-
-    private fun doCopyThroughClipboard(sourceFile: Path, targetFile: Path) {
-        val sourceContent = Files.readAllLines(sourceFile).joinToString(separator = "\n")
-        val clipboardContent = ClipboardContent()
-        clipboardContent.putString(sourceContent)
-        Clipboard.getSystemClipboard().setContent(clipboardContent)
-        Files.writeString(targetFile, sourceContent)
+        doCopy(sourceFile, pathToTargetFile, true, clipboardCopyMechanism)
     }
 
     fun copy(pathToSourceFile: String, pathToTargetFile: String) {
-        doCopy(pathToSourceFile, pathToTargetFile, false, Files::copy)
+        doCopy(pathToSourceFile, pathToTargetFile, false, straightCopyMechanism)
     }
 
     fun copy(sourceFile: Path, pathToTargetFile: String) {
-        doCopy(pathToTargetFile, false) { targetFile ->
-            Files.copy(sourceFile, targetFile)
-        }
+        doCopy(sourceFile, pathToTargetFile, false, straightCopyMechanism)
     }
 
     fun copyWithNotification(pathToSourceFile: String, pathToTargetFile: String) {
-        doCopy(pathToSourceFile, pathToTargetFile, true, Files::copy)
+        doCopy(pathToSourceFile, pathToTargetFile, true, straightCopyMechanism)
     }
 
     fun copyWithNotification(sourceFile: Path, pathToTargetFile: String) {
-        doCopy(pathToTargetFile, true) { targetFile ->
-            Files.copy(sourceFile, targetFile)
-        }
+        doCopy(sourceFile, pathToTargetFile, true, straightCopyMechanism)
     }
 
-    private fun doCopy(pathToSourceFile: String, pathToTargetFile: String, withNotification: Boolean, copy: (Path, Path) -> Unit) {
+    private fun doCopy(pathToSourceFile: String, pathToTargetFile: String, withNotification: Boolean, copyMechanism: CopyMechanism) {
         try {
             val sourceFile = Paths.get(pathToSourceFile)
             if (!Files.exists(sourceFile)) {
                 showPopup("Исходный файл $pathToSourceFile не существует.")
                 return
             }
-            doCopy(pathToTargetFile, withNotification) { targetFile ->
-                copy(sourceFile, targetFile)
-            }
+            doCopy(sourceFile, pathToTargetFile, withNotification, copyMechanism)
         } catch (e: IOException) {
             showErrorPopup(e)
             return
         }
     }
 
-    private fun doCopy(pathToTargetFile: String, withNotification: Boolean, copy: (Path) -> Unit) {
-        val targetFile = Paths.get(pathToTargetFile)
-        copy(targetFile)
+    private fun doCopy(sourceFile: Path, pathToTargetFile: String, withNotification: Boolean, copyMechanism: CopyMechanism) {
+        var targetFile = Paths.get(pathToTargetFile)
+        var copyIncrement = 1
+        while (Files.exists(targetFile)) {
+            targetFile = Paths.get(pathToTargetFile + copyIncrement++)
+        }
+        copyMechanism.copy(sourceFile, targetFile)
         if (withNotification) {
             showPopup("Копирование прошло успешно")
         }
