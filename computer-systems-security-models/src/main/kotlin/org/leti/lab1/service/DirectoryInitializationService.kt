@@ -2,7 +2,6 @@ package org.leti.lab1.service
 
 import javafx.event.EventHandler
 import javafx.scene.control.TreeItem
-import javafx.scene.control.TreeView
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import org.leti.lab1.component.DirectoryViewer
@@ -29,17 +28,13 @@ class DirectoryInitializationService {
             if (it.clickCount == 2) {
                 val item = directoryViewer.selectionModel.selectedItem
                 if (item.value == "..") {
-                    println("Selected Text : ${item.value}")
-                    println("Current directory = $directory")
                     val prevDir = getPreviousDirectory(directory)
-                    println("Previous directory = $directory")
                     initialize(directoryViewer, prevDir)
                 } else {
                     val selectedFile = File(directory + File.separator + item.value)
                     if (!selectedFile.isDirectory) {
                         return@EventHandler
                     }
-                    println("Going inside directory: ${item.value}")
                     initialize(directoryViewer, selectedFile.absolutePath)
                 }
             }
@@ -47,7 +42,6 @@ class DirectoryInitializationService {
     }
 
     private fun getNodesForDirectory(directory: File): TreeItem<String> {
-
         val root = TreeItem(directory.absolutePath).apply {
             isExpanded = true
         }

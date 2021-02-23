@@ -78,7 +78,11 @@ class FileService {
     }
 
     private fun doCopy(sourceFile: Path, pathToTargetFile: String, withNotification: Boolean, copyMechanism: CopyMechanism) {
-        val targetFile = Paths.get(pathToTargetFile)
+        var targetFile = Paths.get(pathToTargetFile)
+        var copyIncrement = 1
+        while (Files.exists(targetFile)) {
+            targetFile = Paths.get(pathToTargetFile + copyIncrement++)
+        }
         copyMechanism.copy(sourceFile, targetFile)
         if (withNotification) {
             showPopup("Копирование прошло успешно")
