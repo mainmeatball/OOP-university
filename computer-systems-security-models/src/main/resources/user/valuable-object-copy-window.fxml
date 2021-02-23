@@ -30,40 +30,6 @@
         <DirectoryViewer fx:id="sourceDirectoryViewer" GridPane.columnIndex="0"/>
         <VBox alignment="CENTER" GridPane.columnIndex="1">
             <DirectoryViewer fx:id="targetDirectoryViewer" GridPane.columnIndex="1"/>
-<!--            <VBox>-->
-<!--                <padding>-->
-<!--                    <Insets top="15"/>-->
-<!--                </padding>-->
-<!--                <Label text="Выберите файл для копирования">-->
-<!--                    <font>-->
-<!--                        <Font size="14"/>-->
-<!--                    </font>-->
-<!--                    <padding>-->
-<!--                        <Insets bottom="10"/>-->
-<!--                    </padding>-->
-<!--                </Label>-->
-<!--                <HBox spacing="10">-->
-<!--                    <TextField fx:id="sourceFileName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>-->
-<!--                    <Button text="..." onAction="#chooseSourceFile"/>-->
-<!--                </HBox>-->
-<!--            </VBox>-->
-<!--            <VBox>-->
-<!--                <padding>-->
-<!--                    <Insets top="15"/>-->
-<!--                </padding>-->
-<!--                <Label text="Выберите директорию назначения">-->
-<!--                    <font>-->
-<!--                        <Font size="14"/>-->
-<!--                    </font>-->
-<!--                    <padding>-->
-<!--                        <Insets bottom="10"/>-->
-<!--                    </padding>-->
-<!--                </Label>-->
-<!--                <HBox spacing="10">-->
-<!--                    <TextField fx:id="targetDirectoryName" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>-->
-<!--                    <Button text="..." onAction="#chooseTargetDirectory"/>-->
-<!--                </HBox>-->
-<!--            </VBox>-->
             <VBox>
                 <padding>
                     <Insets top="15"/>
