@@ -5,6 +5,7 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.control.*
+import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.config.PRIVATE_DIR
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.FileService
@@ -15,7 +16,7 @@ private const val MAIN_MENU = "user/main-menu.fxml"
 class ValuableObjectCreationController {
 
     @FXML
-    lateinit var directoryViewer: TreeView<String>
+    lateinit var directoryViewer: DirectoryViewer
 
     @FXML
     lateinit var fileName: TextField
