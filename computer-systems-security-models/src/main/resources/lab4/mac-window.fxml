@@ -5,6 +5,10 @@
 <?import javafx.scene.text.Text?>
 <?import org.leti.lab1.component.DirectoryViewer?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <VBox fx:controller="org.leti.lab4.controller.MacController"
       xmlns:fx="http://javafx.com/fxml"
       id="top-window"
@@ -41,7 +45,22 @@
                 </HBox>
             </VBox>
             <VBox spacing="16" alignment="CENTER" minWidth="490">
-                <Button fx:id="copyFileButton" text="Копировать" onAction="#copyFile"/>
+                <Button fx:id="copyFileButton" text="Copy" onAction="#copyFile"/>
+                <HBox spacing="6" alignment="CENTER">
+                    <Region prefWidth="50.0" HBox.hgrow="ALWAYS"/>
+                    <Label text="Enter new folder name: "/>
+                    <TextField fx:id="newDirectoryName"/>
+                    <ComboBox fx:id="securityTypeDropdown" value="Non-secret">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Top-secret"/>
+                                <String fx:value="Secret"/>
+                                <String fx:value="Non-secret"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                    <Button fx:id="createDirectoryButton" text="Create" onAction="#createDirectory"/>
+                </HBox>
                 <Label fx:id="status"/>
             </VBox>
         </HBox>

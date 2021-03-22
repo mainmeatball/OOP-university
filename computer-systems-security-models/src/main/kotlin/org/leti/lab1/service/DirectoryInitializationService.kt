@@ -43,6 +43,7 @@ class DirectoryInitializationService {
                 }
             }
         }
+        treeItemTypeService.updateState()
     }
 
     private fun getNodesForDirectory(directory: File): TreeItem<String> {

@@ -8,6 +8,8 @@ import org.leti.lab4.component.TypeAwareTreeItem
 
 object TreeItemTypeMarkerService {
 
+    private val appStateService = ApplicationStateService()
+
     private val fileIcon = Image(javaClass.classLoader.getResourceAsStream("images/file-icon.png"))
     private val blueFolderIcon = Image(javaClass.classLoader.getResourceAsStream("images/blue-folder-icon.png"))
     private val redFolderIcon = Image(javaClass.classLoader.getResourceAsStream("images/red-folder-icon.png"))
@@ -20,6 +22,10 @@ object TreeItemTypeMarkerService {
         SecurityFolderType.SECRET to greenFolderIcon,
         SecurityFolderType.TOP_SECRET to redFolderIcon,
     )
+
+    init {
+        securityCache.putAll(appStateService.fetchState())
+    }
 
     fun markAsFile(treeItem: TypeAwareTreeItem) {
         if (treeItem.type != TreeItemType.FILE) {
@@ -52,7 +58,7 @@ object TreeItemTypeMarkerService {
         markFolder(treeItem, SecurityFolderType.NON_SECRET)
     }
 
-    private fun markFolder(treeItem: TypeAwareTreeItem, securityFolderType: SecurityFolderType) {
+    fun markFolder(treeItem: TypeAwareTreeItem, securityFolderType: SecurityFolderType) {
         if (treeItem.type != TreeItemType.FOLDER) {
             return
         }
@@ -63,5 +69,13 @@ object TreeItemTypeMarkerService {
 
     fun resolveSecurityType(path: String): SecurityFolderType {
         return securityCache[path] ?: SecurityFolderType.NON_SECRET
+    }
+
+    fun updateState() {
+        appStateService.saveState(securityCache)
+    }
+
+    fun updateCache(path: String, securityType: SecurityFolderType) {
+        securityCache[path] = securityType
     }
 }

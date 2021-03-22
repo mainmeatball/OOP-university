@@ -3,13 +3,9 @@ package org.leti.lab4.controller
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
-import javafx.scene.control.Button
-import javafx.scene.control.ContextMenu
-import javafx.scene.control.Label
-import javafx.scene.control.MenuItem
+import javafx.scene.control.*
+import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
-import javafx.scene.text.Text
 import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.FileService
@@ -22,8 +18,6 @@ import java.io.File
 
 class MacController {
 
-    private val treeItemTypeService = TreeItemTypeMarkerService
-
     @FXML
     lateinit var sourceDirectoryViewer: DirectoryViewer
 
@@ -34,11 +28,41 @@ class MacController {
     lateinit var copyFileButton: Button
 
     @FXML
+    lateinit var createDirectoryButton: Button
+
+    @FXML
     lateinit var status: Label
+
+    @FXML
+    lateinit var securityTypeDropdown: ComboBox<String>
+
+    @FXML
+    lateinit var newDirectoryName: TextField
+
+    private val treeItemTypeService = TreeItemTypeMarkerService
 
     private val directoryInitializationService = DirectoryInitializationService()
 
     private val fileService = FileService()
+
+    lateinit var lastChosenFilesystem: DirectoryViewer
+
+    @FXML
+    fun initialize() {
+        reloadDirectories()
+        val sourceContextMenu = createContextMenu(sourceDirectoryViewer)
+        val targetContextMenu = createContextMenu(targetDirectoryViewer)
+        sourceDirectoryViewer.contextMenu = sourceContextMenu
+        targetDirectoryViewer.contextMenu = targetContextMenu
+
+        lastChosenFilesystem = sourceDirectoryViewer
+        sourceDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            lastChosenFilesystem = sourceDirectoryViewer
+        }
+        targetDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            lastChosenFilesystem = targetDirectoryViewer
+        }
+    }
 
     @FXML
     private fun copyFile(event: ActionEvent) {
@@ -65,12 +89,22 @@ class MacController {
     }
 
     @FXML
-    fun initialize() {
+    fun createDirectory() {
+        val selection = securityTypeDropdown.selectionModel?.selectedItem!!
+        val securityFolderType = SecurityFolderType.valueOf(selection.replace('-', '_').toUpperCase())
+        val newFolderName = newDirectoryName.text ?: run {
+            log("Please, enter new directory name")
+            return
+        }
+        try {
+            val newDirPath = lastChosenFilesystem.currentDirectory + File.separator + newFolderName
+            fileService.createFolder(newDirPath)
+            treeItemTypeService.updateCache(newDirPath, securityFolderType)
+            log("Directory $newFolderName is successfully created", Color.GREEN)
+        } catch (ex: FileAlreadyExistsException) {
+            log("Directory is already exists, fill another name")
+        }
         reloadDirectories()
-        val sourceContextMenu = createContextMenu(sourceDirectoryViewer)
-        val targetContextMenu = createContextMenu(targetDirectoryViewer)
-        sourceDirectoryViewer.contextMenu = sourceContextMenu
-        targetDirectoryViewer.contextMenu = targetContextMenu
     }
 
     private fun reloadDirectories() {
@@ -94,14 +128,17 @@ class MacController {
         return ContextMenu(
             createMenuItem("Top-secret", directoryViewer) {
                 treeItemTypeService.markAsTopSecretFolder(it, true)
+                treeItemTypeService.updateState()
                 reloadDirectories()
             },
             createMenuItem("Secret", directoryViewer) {
                 treeItemTypeService.markAsSecretFolder(it, true)
+                treeItemTypeService.updateState()
                 reloadDirectories()
             },
             createMenuItem("Non-secret", directoryViewer) {
                 treeItemTypeService.markAsNonSecretFolder(it, true)
+                treeItemTypeService.updateState()
                 reloadDirectories()
             }
         )
