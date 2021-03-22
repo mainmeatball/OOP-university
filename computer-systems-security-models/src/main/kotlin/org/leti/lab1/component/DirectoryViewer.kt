@@ -1,7 +1,12 @@
 package org.leti.lab1.component
 
 import javafx.scene.control.TreeView
+import org.leti.lab4.component.TypeAwareTreeItem
+import org.leti.lab4.config.DESKTOP
 
 class DirectoryViewer : TreeView<String>() {
-    var currentDirectory = "/"
+    var currentDirectory = DESKTOP
+
+    val selectedItem: TypeAwareTreeItem?
+        get() = selectionModel.selectedItem as TypeAwareTreeItem?
 }
