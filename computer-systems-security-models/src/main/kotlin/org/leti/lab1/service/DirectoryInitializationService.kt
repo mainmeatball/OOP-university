@@ -7,10 +7,11 @@ import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TreeItemType
 import org.leti.lab4.component.TypeAwareTreeItem
 import org.leti.lab4.service.TreeItemTypeMarkerService
+import org.leti.lab5.component.table.User
 import java.io.File
 
 
-class DirectoryInitializationService {
+open class DirectoryInitializationService {
 
     private val treeItemTypeService = TreeItemTypeMarkerService
 
@@ -51,6 +52,9 @@ class DirectoryInitializationService {
         val root = TypeAwareTreeItem("($securityType) " + directory.absolutePath).apply {
             isExpanded = true
         }
+        if (!allowDirectory(root)) {
+            return TypeAwareTreeItem("You are not allowed to see this directory")
+        }
         directory.listFiles()?.let {
             for (f in it) {
                 if (f.isDirectory) {
@@ -59,7 +63,9 @@ class DirectoryInitializationService {
                     }
                     dir.type = TreeItemType.FOLDER
                     treeItemTypeService.markAsNonSecretFolder(dir)
-                    root.children.add(dir)
+                    if (allowDirectory(dir)) {
+                        root.children.add(dir)
+                    }
                 } else {
                     val file = TypeAwareTreeItem(f.name).apply {
                         absolutePath = directory.absolutePath + File.separator + f.name
@@ -79,5 +85,9 @@ class DirectoryInitializationService {
             return directory
         }
         return directory.substringBeforeLast('/')
+    }
+
+    protected open fun allowDirectory(dir: TypeAwareTreeItem): Boolean {
+        return true
     }
 }

@@ -8,7 +8,7 @@ import org.leti.lab4.component.TypeAwareTreeItem
 
 object TreeItemTypeMarkerService {
 
-    private val appStateService = ApplicationStateService()
+    private val appStateService = ApplicationStateService
 
     private val fileIcon = Image(javaClass.classLoader.getResourceAsStream("images/file-icon.png"))
     private val blueFolderIcon = Image(javaClass.classLoader.getResourceAsStream("images/blue-folder-icon.png"))

@@ -16,7 +16,7 @@ import org.leti.lab4.service.TreeItemTypeMarkerService
 import java.io.File
 
 
-class MacController {
+open class MacController {
 
     @FXML
     lateinit var sourceDirectoryViewer: DirectoryViewer
@@ -41,15 +41,15 @@ class MacController {
 
     private val treeItemTypeService = TreeItemTypeMarkerService
 
-    private val directoryInitializationService = DirectoryInitializationService()
+    protected open val directoryInitializationService = DirectoryInitializationService()
 
     private val fileService = FileService()
 
     lateinit var lastChosenFilesystem: DirectoryViewer
 
     @FXML
-    fun initialize() {
-        reloadDirectories()
+    open fun initialize() {
+        refreshDirectories()
         val sourceContextMenu = createContextMenu(sourceDirectoryViewer)
         val targetContextMenu = createContextMenu(targetDirectoryViewer)
         sourceDirectoryViewer.contextMenu = sourceContextMenu
@@ -84,7 +84,7 @@ class MacController {
         }
         log("File \"${sourceDirectoryViewer.selectedItem!!.value}\" successfully copied", Color.GREEN)
         fileService.copy(absoluteSourcePath, absoluteTargetPath)
-        reloadTargetDirectory()
+        refreshTargetDirectory()
         event.consume()
     }
 
@@ -104,23 +104,23 @@ class MacController {
         } catch (ex: FileAlreadyExistsException) {
             log("Directory is already exists, fill another name")
         }
-        reloadDirectories()
+        refreshDirectories()
     }
 
-    private fun reloadDirectories() {
-        reloadSourceDirectory()
-        reloadTargetDirectory()
+    protected fun refreshDirectories() {
+        refreshSourceDirectory()
+        refreshTargetDirectory()
     }
 
-    private fun reloadSourceDirectory() {
-        reloadDirectoryTree(sourceDirectoryViewer, sourceDirectoryViewer.currentDirectory)
+    private fun refreshSourceDirectory() {
+        refreshDirectoryTree(sourceDirectoryViewer, sourceDirectoryViewer.currentDirectory)
     }
 
-    private fun reloadTargetDirectory() {
-        reloadDirectoryTree(targetDirectoryViewer, targetDirectoryViewer.currentDirectory)
+    private fun refreshTargetDirectory() {
+        refreshDirectoryTree(targetDirectoryViewer, targetDirectoryViewer.currentDirectory)
     }
 
-    private fun reloadDirectoryTree(directoryViewer: DirectoryViewer, path: String) {
+    private fun refreshDirectoryTree(directoryViewer: DirectoryViewer, path: String) {
         directoryInitializationService.initialize(directoryViewer, path)
     }
 
@@ -129,17 +129,17 @@ class MacController {
             createMenuItem("Top-secret", directoryViewer) {
                 treeItemTypeService.markAsTopSecretFolder(it, true)
                 treeItemTypeService.updateState()
-                reloadDirectories()
+                refreshDirectories()
             },
             createMenuItem("Secret", directoryViewer) {
                 treeItemTypeService.markAsSecretFolder(it, true)
                 treeItemTypeService.updateState()
-                reloadDirectories()
+                refreshDirectories()
             },
             createMenuItem("Non-secret", directoryViewer) {
                 treeItemTypeService.markAsNonSecretFolder(it, true)
                 treeItemTypeService.updateState()
-                reloadDirectories()
+                refreshDirectories()
             }
         )
     }
