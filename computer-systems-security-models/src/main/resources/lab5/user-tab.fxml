@@ -20,7 +20,7 @@
     <HBox>
         <Label text="New user: "/>
         <TextField fx:id="userName"/>
-        <Button text="New user" onAction="#createNewUser"/>
+        <Button text="Create" onAction="#createNewUser"/>
     </HBox>
     <TableView fx:id="userTable" prefHeight="300" prefWidth="600" VBox.vgrow="ALWAYS"/>
 </VBox>

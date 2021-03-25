@@ -20,7 +20,7 @@
     <HBox>
         <Label text="New role: "/>
         <TextField fx:id="roleName"/>
-        <Button text="New role" onAction="#createNewRole"/>
+        <Button text="Create" onAction="#createNewRole"/>
     </HBox>
     <TableView fx:id="roleTable" prefHeight="300" prefWidth="600" VBox.vgrow="ALWAYS"/>
 </VBox>
