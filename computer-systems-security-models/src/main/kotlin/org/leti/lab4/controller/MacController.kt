@@ -159,7 +159,7 @@ open class MacController {
 
     private fun validateSecurity(from: SecurityFolderType, to: SecurityFolderType) = from.privacy <= to.privacy
 
-    private fun log(message: String, color: Color = Color.BLACK) {
+    protected fun log(message: String, color: Color = Color.BLACK) {
         status.text = message
         status.textFill = color
     }

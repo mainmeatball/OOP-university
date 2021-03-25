@@ -23,6 +23,7 @@ class MainController : MacController() {
         stateService.updateUserCallback = { user, action ->
             action.doAction(currentUser.items, user)
         }
+        stateService.log = { message, color -> log(message, color) }
     }
 
     @FXML

@@ -5,6 +5,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.paint.Color
 import javafx.util.Callback
 import org.leti.lab4.service.ApplicationStateService
 import org.leti.lab5.component.table.NamePropertiesAware
@@ -26,11 +27,18 @@ object UserRoleStateService {
     val roleList = mutableListOf<Role>()
 
     var updateUserCallback: (User, UserActionType) -> Unit = { _, _ -> }
+    var log: (String, Color) -> Unit = { _, _ -> }
 
     fun addUserItems(table: TableView<User>, vararg items: User) {
-        table.items.addAll(*items)
-        userList += items
-        items.forEach { updateUserCallback(it, UserActionType.ADD) }
+        for (item in items) {
+            if (userList.any { it.name == item.name }) {
+                log("User ${item.name} already exists", Color.RED)
+                continue
+            }
+            table.items.add(item)
+            userList += item
+            updateUserCallback(item, UserActionType.ADD)
+        }
     }
 
     fun addUserItemsAndSaveState(table: TableView<User>, vararg items: User) {
@@ -39,10 +47,14 @@ object UserRoleStateService {
     }
 
     fun addRoleItems(table: TableView<Role>, vararg items: Role) {
-        table.items.addAll(*items)
-        roleList += items
-        items.forEach {
-            addNewColumn<User>(USER_TABLE_NAME, it.name)
+        for (item in items) {
+            if (roleList.any { it.name == item.name }) {
+                log("Role ${item.name} already exists", Color.RED)
+                continue
+            }
+            table.items.add(item)
+            roleList += item
+            addNewColumn<User>(USER_TABLE_NAME, item.name)
         }
     }
 
