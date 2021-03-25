@@ -3,7 +3,7 @@ package org.leti.lab4.component
 import javafx.scene.control.TreeItem
 
 class TypeAwareTreeItem(
-    val value: String,
+    var value: String,
     var type: TreeItemType? = null,
     var security: SecurityFolderType = SecurityFolderType.NON_SECRET
 ) : TreeItem<String>(value) {
@@ -20,5 +20,11 @@ enum class SecurityFolderType(
 ) {
     TOP_SECRET("Top-secret", Int.MAX_VALUE),
     SECRET("Secret", 500),
-    NON_SECRET("Non-secret", Int.MIN_VALUE)
+    NON_SECRET("Non-secret", Int.MIN_VALUE);
+
+    companion object {
+        fun getFromReadableValue(readableValue: String): SecurityFolderType {
+            return values().first { it.value == readableValue }
+        }
+    }
 }

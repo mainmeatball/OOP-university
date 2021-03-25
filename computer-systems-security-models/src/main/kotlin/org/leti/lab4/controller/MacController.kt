@@ -3,13 +3,9 @@ package org.leti.lab4.controller
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
-import javafx.scene.control.Button
-import javafx.scene.control.ContextMenu
-import javafx.scene.control.Label
-import javafx.scene.control.MenuItem
+import javafx.scene.control.*
+import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
-import javafx.scene.text.Text
 import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.FileService
@@ -20,9 +16,7 @@ import org.leti.lab4.service.TreeItemTypeMarkerService
 import java.io.File
 
 
-class MacController {
-
-    private val treeItemTypeService = TreeItemTypeMarkerService
+open class MacController {
 
     @FXML
     lateinit var sourceDirectoryViewer: DirectoryViewer
@@ -34,11 +28,42 @@ class MacController {
     lateinit var copyFileButton: Button
 
     @FXML
+    lateinit var createDirectoryButton: Button
+
+    @FXML
     lateinit var status: Label
 
-    private val directoryInitializationService = DirectoryInitializationService()
+    @FXML
+    lateinit var securityTypeDropdown: ComboBox<String>
+
+    @FXML
+    lateinit var newDirectoryName: TextField
+
+    private val treeItemTypeService = TreeItemTypeMarkerService
+
+    protected open val directoryInitializationService = DirectoryInitializationService()
 
     private val fileService = FileService()
+
+    lateinit var lastChosenFilesystem: DirectoryViewer
+
+    @FXML
+    open fun initialize() {
+        refreshDirectories()
+        val sourceContextMenu = createContextMenu(sourceDirectoryViewer)
+        val targetContextMenu = createContextMenu(targetDirectoryViewer)
+        sourceDirectoryViewer.contextMenu = sourceContextMenu
+        targetDirectoryViewer.contextMenu = targetContextMenu
+
+        lastChosenFilesystem = sourceDirectoryViewer
+        sourceDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            lastChosenFilesystem = sourceDirectoryViewer
+        }
+        targetDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
+            lastChosenFilesystem = targetDirectoryViewer
+        }
+        securityTypeDropdown.items.addAll(SecurityFolderType.values().map { it.value })
+    }
 
     @FXML
     private fun copyFile(event: ActionEvent) {
@@ -60,33 +85,43 @@ class MacController {
         }
         log("File \"${sourceDirectoryViewer.selectedItem!!.value}\" successfully copied", Color.GREEN)
         fileService.copy(absoluteSourcePath, absoluteTargetPath)
-        reloadTargetDirectory()
+        refreshTargetDirectory()
         event.consume()
     }
 
     @FXML
-    fun initialize() {
-        reloadDirectories()
-        val sourceContextMenu = createContextMenu(sourceDirectoryViewer)
-        val targetContextMenu = createContextMenu(targetDirectoryViewer)
-        sourceDirectoryViewer.contextMenu = sourceContextMenu
-        targetDirectoryViewer.contextMenu = targetContextMenu
+    fun createDirectory() {
+        val selection = securityTypeDropdown.selectionModel?.selectedItem!!
+        val securityFolderType = SecurityFolderType.valueOf(selection.replace('-', '_').toUpperCase())
+        val newFolderName = newDirectoryName.text ?: run {
+            log("Please, enter new directory name")
+            return
+        }
+        try {
+            val newDirPath = lastChosenFilesystem.currentDirectory + File.separator + newFolderName
+            fileService.createFolder(newDirPath)
+            treeItemTypeService.updateCache(newDirPath, securityFolderType)
+            log("Directory $newFolderName is successfully created", Color.GREEN)
+        } catch (ex: FileAlreadyExistsException) {
+            log("Directory is already exists, fill another name")
+        }
+        refreshDirectories()
     }
 
-    private fun reloadDirectories() {
-        reloadSourceDirectory()
-        reloadTargetDirectory()
+    protected fun refreshDirectories() {
+        refreshSourceDirectory()
+        refreshTargetDirectory()
     }
 
-    private fun reloadSourceDirectory() {
-        reloadDirectoryTree(sourceDirectoryViewer, sourceDirectoryViewer.currentDirectory)
+    private fun refreshSourceDirectory() {
+        refreshDirectoryTree(sourceDirectoryViewer, sourceDirectoryViewer.currentDirectory)
     }
 
-    private fun reloadTargetDirectory() {
-        reloadDirectoryTree(targetDirectoryViewer, targetDirectoryViewer.currentDirectory)
+    private fun refreshTargetDirectory() {
+        refreshDirectoryTree(targetDirectoryViewer, targetDirectoryViewer.currentDirectory)
     }
 
-    private fun reloadDirectoryTree(directoryViewer: DirectoryViewer, path: String) {
+    private fun refreshDirectoryTree(directoryViewer: DirectoryViewer, path: String) {
         directoryInitializationService.initialize(directoryViewer, path)
     }
 
@@ -94,15 +129,18 @@ class MacController {
         return ContextMenu(
             createMenuItem("Top-secret", directoryViewer) {
                 treeItemTypeService.markAsTopSecretFolder(it, true)
-                reloadDirectories()
+                treeItemTypeService.updateState()
+                refreshDirectories()
             },
             createMenuItem("Secret", directoryViewer) {
                 treeItemTypeService.markAsSecretFolder(it, true)
-                reloadDirectories()
+                treeItemTypeService.updateState()
+                refreshDirectories()
             },
             createMenuItem("Non-secret", directoryViewer) {
                 treeItemTypeService.markAsNonSecretFolder(it, true)
-                reloadDirectories()
+                treeItemTypeService.updateState()
+                refreshDirectories()
             }
         )
     }
@@ -122,7 +160,7 @@ class MacController {
 
     private fun validateSecurity(from: SecurityFolderType, to: SecurityFolderType) = from.privacy <= to.privacy
 
-    private fun log(message: String, color: Color = Color.BLACK) {
+    protected fun log(message: String, color: Color = Color.BLACK) {
         status.text = message
         status.textFill = color
     }
