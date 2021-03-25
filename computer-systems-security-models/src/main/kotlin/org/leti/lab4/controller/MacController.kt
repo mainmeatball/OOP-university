@@ -62,6 +62,7 @@ open class MacController {
         targetDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             lastChosenFilesystem = targetDirectoryViewer
         }
+        securityTypeDropdown.items.addAll(SecurityFolderType.values().map { it.value })
     }
 
     @FXML

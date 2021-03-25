@@ -58,15 +58,7 @@
                     <Region prefWidth="50.0" HBox.hgrow="ALWAYS"/>
                     <Label text="Enter new folder name: "/>
                     <TextField fx:id="newDirectoryName"/>
-                    <ComboBox fx:id="securityTypeDropdown" value="Non-secret">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Top-secret"/>
-                                <String fx:value="Secret"/>
-                                <String fx:value="Non-secret"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
+                    <ComboBox fx:id="securityTypeDropdown" value="Non-secret"/>
                     <Button fx:id="createDirectoryButton" text="Create" onAction="#createDirectory"/>
                 </HBox>
                 <Label fx:id="status"/>
