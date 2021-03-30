@@ -2,7 +2,9 @@ package org.leti.lab4.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.leti.lab4.component.SecurityFolderType
-import org.leti.lab5.component.table.UserRole
+import org.leti.lab5.component.FolderColor
+import org.leti.lab5.component.SecurityType
+import org.leti.lab5.component.UserRole
 import java.io.File
 
 private const val JAR_APP_STATE_FOLDER = "./state"
@@ -15,7 +17,7 @@ object ApplicationStateService {
 
     private val mapper = ObjectMapper()
 
-    fun saveState(stateMap: Map<String, SecurityFolderType>) {
+    fun saveState(stateMap: Map<String, SecurityType>) {
         val stateFile = getStateFile()
         stateFile?.createNewFile() ?: return
         mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, stateMap)
@@ -27,15 +29,22 @@ object ApplicationStateService {
         mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, stateMap)
     }
 
-    fun fetchState(): Map<String, SecurityFolderType> {
+    fun fetchState(): Map<String, SecurityType> {
         val stateFile = getStateFile() ?: return mapOf()
         val stateMap = mapper.readValue(stateFile, Map::class.java)
         return stateMap.entries
-            .associate { it.key as String to SecurityFolderType.valueOf(it.value as String) }
+            .associate {
+                val value = it.value as LinkedHashMap<*, *>
+                it.key as String to SecurityType(value["name"] as String, value["priority"] as Int, FolderColor.valueOf(value["color"] as String))
+            }
     }
 
     fun fetchRolesUsersState(): UserRole {
         val stateFile = getRoleStateFile() ?: return UserRole()
+        if (!stateFile.exists()) {
+            stateFile.createNewFile()
+            mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, UserRole())
+        }
         return mapper.readValue(stateFile, UserRole::class.java)
     }
 
@@ -57,7 +66,6 @@ object ApplicationStateService {
                 null
             }
         }
-        val stateFile = File(ideaFile)
-        return stateFile
+        return File(ideaFile)
     }
 }

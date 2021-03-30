@@ -1,8 +1,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 <?import org.leti.lab1.component.DirectoryViewer?>
 <VBox fx:controller="org.leti.lab5.controller.MainController"
       xmlns:fx="http://javafx.com/fxml"
@@ -14,10 +12,10 @@
     </padding>
 
     <HBox spacing="10">
-        <Label text="Current user"/>
+        <Label text="Current user" minWidth="80"/>
         <ComboBox fx:id="currentUser" onAction="#updateView"/>
         <Region prefWidth="400" HBox.hgrow="ALWAYS"/>
-        <Button text="Refresh" onAction="#updateView"/>
+        <Button text="Refresh" onAction="#updateView" prefWidth="70"/>
     </HBox>
     <VBox alignment="CENTER" spacing="10">
         <HBox VBox.vgrow="ALWAYS" maxHeight="Infinity" spacing="10">
@@ -25,26 +23,7 @@
             <DirectoryViewer fx:id="targetDirectoryViewer" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
         </HBox>
         <HBox alignment="CENTER_LEFT">
-            <VBox>
-                <HBox>
-                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@/images/red-folder-icon.png"/>
-                    </ImageView>
-                    <Text text=" -- Top-secret"/>
-                </HBox>
-                <HBox>
-                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@/images/green-folder-icon.png"/>
-                    </ImageView>
-                    <Text text=" -- Secret"/>
-                </HBox>
-                <HBox>
-                    <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@/images/blue-folder-icon.png"/>
-                    </ImageView>
-                    <Text text=" -- Non-secret"/>
-                </HBox>
-            </VBox>
+            <VBox fx:id="securityTypeList"/>
             <VBox spacing="16" alignment="CENTER" minWidth="490">
                 <Button fx:id="copyFileButton" text="Copy" onAction="#copyFile"/>
                 <HBox spacing="6" alignment="CENTER">
@@ -64,6 +43,9 @@
             </Tab>
             <Tab text="Roles" closable="false">
                 <fx:include source="role-tab.fxml"/>
+            </Tab>
+            <Tab text="Security" closable="false">
+                <fx:include source="security-tab.fxml"/>
             </Tab>
         </TabPane>
     </VBox>

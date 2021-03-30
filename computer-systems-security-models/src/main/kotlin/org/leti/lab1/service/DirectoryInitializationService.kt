@@ -3,17 +3,15 @@ package org.leti.lab1.service
 import javafx.event.EventHandler
 import javafx.scene.control.TreeItem
 import org.leti.lab1.component.DirectoryViewer
-import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TreeItemType
 import org.leti.lab4.component.TypeAwareTreeItem
 import org.leti.lab4.service.TreeItemTypeMarkerService
-import org.leti.lab5.component.table.User
 import java.io.File
 
 
 open class DirectoryInitializationService {
 
-    private val treeItemTypeService = TreeItemTypeMarkerService
+    protected val treeItemTypeService = TreeItemTypeMarkerService
 
     fun initialize(directoryViewer: DirectoryViewer, directory: String) {
         val dir = File(directory)
@@ -48,8 +46,8 @@ open class DirectoryInitializationService {
     }
 
     private fun getNodesForDirectory(directory: File): TreeItem<String> {
-        val securityType = treeItemTypeService.resolveSecurityType(directory.absolutePath).value
-        val root = TypeAwareTreeItem("($securityType) " + directory.absolutePath).apply {
+        val securityType = treeItemTypeService.resolveSecurityType(directory.absolutePath)
+        val root = TypeAwareTreeItem("(${securityType.name}) " + directory.absolutePath).apply {
             isExpanded = true
         }
         if (!allowDirectory(root)) {
@@ -60,17 +58,17 @@ open class DirectoryInitializationService {
                 if (f.isDirectory) {
                     val dir = TypeAwareTreeItem(f.name).apply {
                         absolutePath = directory.absolutePath + File.separator + f.name
+                        type = TreeItemType.FOLDER
                     }
-                    dir.type = TreeItemType.FOLDER
-                    treeItemTypeService.markAsNonSecretFolder(dir)
+                    markAsNonSecretFolder(dir)
                     if (allowDirectory(dir)) {
                         root.children.add(dir)
                     }
                 } else {
                     val file = TypeAwareTreeItem(f.name).apply {
                         absolutePath = directory.absolutePath + File.separator + f.name
+                        type = TreeItemType.FILE
                     }
-                    file.type = TreeItemType.FILE
                     treeItemTypeService.markAsFile(file)
                     root.children.add(file)
                 }
@@ -78,6 +76,12 @@ open class DirectoryInitializationService {
         }
         return root
     }
+
+    fun markAsNonSecretFolder(dir: TypeAwareTreeItem) {
+        treeItemTypeService.markAsNonSecret(dir, false, getAvailableSecurityTypes())
+    }
+
+    open protected fun getAvailableSecurityTypes() = listOf("Top-secret", "Secret", "Non-secret")
 
     private fun getPreviousDirectory(directory: String): String {
         val separators = directory.count { it == '/' }
@@ -87,7 +91,7 @@ open class DirectoryInitializationService {
         return directory.substringBeforeLast('/')
     }
 
-    protected open fun allowDirectory(dir: TypeAwareTreeItem): Boolean {
+    open protected fun allowDirectory(dir: TypeAwareTreeItem): Boolean {
         return true
     }
 }

@@ -27,7 +27,7 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'org.leti.lab4.MainKt'
+mainClassName = 'org.leti.lab5.MainKt'
 
 jar {
     manifest {
@@ -36,7 +36,7 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    archivesBaseName = 'mandate_access_control'
+    archivesBaseName = 'role_access_control'
 }
 
 compileKotlin {
