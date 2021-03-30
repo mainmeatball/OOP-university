@@ -14,18 +14,3 @@ data class TypeAwareTreeItem(
 enum class TreeItemType {
     FOLDER, FILE
 }
-
-enum class SecurityFolderType(
-    val value: String,
-    val privacy: Int
-) {
-    TOP_SECRET("Top-secret", Int.MAX_VALUE),
-    SECRET("Secret", 500),
-    NON_SECRET("Non-secret", Int.MIN_VALUE);
-
-    companion object {
-        fun getFromReadableValue(readableValue: String): SecurityFolderType {
-            return values().first { it.value == readableValue }
-        }
-    }
-}

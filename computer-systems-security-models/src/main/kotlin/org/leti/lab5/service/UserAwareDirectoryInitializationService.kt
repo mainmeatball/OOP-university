@@ -1,7 +1,6 @@
 package org.leti.lab5.service
 
 import org.leti.lab1.service.DirectoryInitializationService
-import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TypeAwareTreeItem
 import org.leti.lab5.component.User
 

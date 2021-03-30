@@ -1,27 +1,20 @@
 package org.leti.lab4.controller
 
-import javafx.collections.FXCollections
 import javafx.event.ActionEvent
-import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
-import javafx.util.Callback
 import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.FileService
 import org.leti.lab4.component.MarkFolderMenuItem
-import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TreeItemType
-import org.leti.lab4.component.TypeAwareTreeItem
 import org.leti.lab4.dao.SecurityTypeDao
 import org.leti.lab4.service.LoggerService
 import org.leti.lab4.service.TreeItemTypeMarkerService
 import org.leti.lab4.storage.InMemoryStorage
-import org.leti.lab5.component.FolderColor
 import org.leti.lab5.component.SecurityType
-import org.leti.lab5.component.SecurityTypeListCell
 import java.io.File
 
 

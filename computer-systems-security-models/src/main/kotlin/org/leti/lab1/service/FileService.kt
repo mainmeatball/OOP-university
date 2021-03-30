@@ -5,7 +5,6 @@ import org.leti.lab1.component.showPopup
 import org.leti.lab1.mechanism.copy.ClipboardCopyMechanism
 import org.leti.lab1.mechanism.copy.CopyMechanism
 import org.leti.lab1.mechanism.copy.StraightCopyMechanism
-import org.leti.lab4.component.SecurityFolderType
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
