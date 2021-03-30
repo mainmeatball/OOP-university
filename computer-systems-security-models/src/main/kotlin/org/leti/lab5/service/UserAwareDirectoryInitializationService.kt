@@ -3,7 +3,7 @@ package org.leti.lab5.service
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TypeAwareTreeItem
-import org.leti.lab5.component.table.User
+import org.leti.lab5.component.User
 
 class UserAwareDirectoryInitializationService : DirectoryInitializationService() {
 
@@ -25,7 +25,9 @@ class UserAwareDirectoryInitializationService : DirectoryInitializationService()
             .flatMap { it.properties.entries }
             .filter { it.value }
             .map { it.key }
-            .map { SecurityFolderType.getFromReadableValue(it) }
+            .map { stateService.securityList.find { item -> item.name == it } }
             .any { it == securityFolderType }
     }
+
+    override fun getAvailableSecurityTypes() = stateService.securityList.map { it.name }
 }

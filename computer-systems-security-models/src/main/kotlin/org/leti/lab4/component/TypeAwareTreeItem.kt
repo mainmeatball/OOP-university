@@ -1,11 +1,12 @@
 package org.leti.lab4.component
 
 import javafx.scene.control.TreeItem
+import org.leti.lab5.component.SecurityType
 
-class TypeAwareTreeItem(
+data class TypeAwareTreeItem(
     var value: String,
     var type: TreeItemType? = null,
-    var security: SecurityFolderType = SecurityFolderType.NON_SECRET
+    var security: SecurityType = SecurityType.NON_SECRET
 ) : TreeItem<String>(value) {
     var absolutePath: String = "/"
 }

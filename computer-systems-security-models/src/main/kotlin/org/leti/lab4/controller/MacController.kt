@@ -1,18 +1,27 @@
 package org.leti.lab4.controller
 
+import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
+import javafx.util.Callback
 import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.FileService
+import org.leti.lab4.component.MarkFolderMenuItem
 import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TreeItemType
 import org.leti.lab4.component.TypeAwareTreeItem
+import org.leti.lab4.dao.SecurityTypeDao
+import org.leti.lab4.service.LoggerService
 import org.leti.lab4.service.TreeItemTypeMarkerService
+import org.leti.lab4.storage.InMemoryStorage
+import org.leti.lab5.component.FolderColor
+import org.leti.lab5.component.SecurityType
+import org.leti.lab5.component.SecurityTypeListCell
 import java.io.File
 
 
@@ -34,12 +43,12 @@ open class MacController {
     lateinit var status: Label
 
     @FXML
-    lateinit var securityTypeDropdown: ComboBox<String>
+    protected open lateinit var securityTypeDropdown: ComboBox<SecurityType>
 
     @FXML
     lateinit var newDirectoryName: TextField
 
-    private val treeItemTypeService = TreeItemTypeMarkerService
+    protected val treeItemTypeService = TreeItemTypeMarkerService
 
     protected open val directoryInitializationService = DirectoryInitializationService()
 
@@ -47,14 +56,13 @@ open class MacController {
 
     lateinit var lastChosenFilesystem: DirectoryViewer
 
+    private val securityTypeDao = SecurityTypeDao()
+
     @FXML
     open fun initialize() {
+        addDefaultSecurityTypes()
         refreshDirectories()
-        val sourceContextMenu = createContextMenu(sourceDirectoryViewer)
-        val targetContextMenu = createContextMenu(targetDirectoryViewer)
-        sourceDirectoryViewer.contextMenu = sourceContextMenu
-        targetDirectoryViewer.contextMenu = targetContextMenu
-
+        updateContextMenu()
         lastChosenFilesystem = sourceDirectoryViewer
         sourceDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             lastChosenFilesystem = sourceDirectoryViewer
@@ -62,17 +70,18 @@ open class MacController {
         targetDirectoryViewer.addEventHandler(MouseEvent.MOUSE_CLICKED) {
             lastChosenFilesystem = targetDirectoryViewer
         }
-        securityTypeDropdown.items.addAll(SecurityFolderType.values().map { it.value })
+        initializeCreateNewFolderSecurityTypeDropdown()
+        LoggerService.label = status
     }
 
     @FXML
     private fun copyFile(event: ActionEvent) {
         val selectedItem = sourceDirectoryViewer.selectedItem ?: run {
-            log("Please, select file to copy")
+            LoggerService.log("Please, select file to copy")
             return
         }
         if (selectedItem.type == TreeItemType.FOLDER) {
-            log("You can not copy a directory")
+            LoggerService.log("You can not copy a directory")
             return
         }
         val absoluteSourcePath = selectedItem.absolutePath
@@ -80,10 +89,10 @@ open class MacController {
         val fromSecurity = treeItemTypeService.resolveSecurityType(sourceDirectoryViewer.currentDirectory)
         val toSecurity = treeItemTypeService.resolveSecurityType(targetDirectoryViewer.currentDirectory)
         if (!validateSecurity(fromSecurity, toSecurity)) {
-            log("File copy from $fromSecurity to $toSecurity folder is not allowed", Color.RED)
+            LoggerService.log("File copy from ${fromSecurity.name} to ${toSecurity.name} folder is not allowed", Color.RED)
             return
         }
-        log("File \"${sourceDirectoryViewer.selectedItem!!.value}\" successfully copied", Color.GREEN)
+        LoggerService.log("File \"${sourceDirectoryViewer.selectedItem!!.value}\" successfully copied", Color.GREEN)
         fileService.copy(absoluteSourcePath, absoluteTargetPath)
         refreshTargetDirectory()
         event.consume()
@@ -91,19 +100,18 @@ open class MacController {
 
     @FXML
     fun createDirectory() {
-        val selection = securityTypeDropdown.selectionModel?.selectedItem!!
-        val securityFolderType = SecurityFolderType.valueOf(selection.replace('-', '_').toUpperCase())
+        val securityType = securityTypeDropdown.value ?: return
         val newFolderName = newDirectoryName.text ?: run {
-            log("Please, enter new directory name")
+            LoggerService.log("Please, enter new directory name")
             return
         }
         try {
             val newDirPath = lastChosenFilesystem.currentDirectory + File.separator + newFolderName
             fileService.createFolder(newDirPath)
-            treeItemTypeService.updateCache(newDirPath, securityFolderType)
-            log("Directory $newFolderName is successfully created", Color.GREEN)
+            InMemoryStorage.setFolderSecurityType(newDirPath, securityType)
+            LoggerService.log("Directory $newFolderName is successfully created", Color.GREEN)
         } catch (ex: FileAlreadyExistsException) {
-            log("Directory is already exists, fill another name")
+            LoggerService.log("Directory is already exists, fill another name")
         }
         refreshDirectories()
     }
@@ -125,43 +133,32 @@ open class MacController {
         directoryInitializationService.initialize(directoryViewer, path)
     }
 
-    private fun createContextMenu(directoryViewer: DirectoryViewer): ContextMenu {
+    open protected fun createContextMenu(directoryViewer: DirectoryViewer): ContextMenu {
         return ContextMenu(
-            createMenuItem("Top-secret", directoryViewer) {
-                treeItemTypeService.markAsTopSecretFolder(it, true)
-                treeItemTypeService.updateState()
-                refreshDirectories()
-            },
-            createMenuItem("Secret", directoryViewer) {
-                treeItemTypeService.markAsSecretFolder(it, true)
-                treeItemTypeService.updateState()
-                refreshDirectories()
-            },
-            createMenuItem("Non-secret", directoryViewer) {
-                treeItemTypeService.markAsNonSecretFolder(it, true)
-                treeItemTypeService.updateState()
-                refreshDirectories()
-            }
+            *securityTypeDao.findAll().map {
+                MarkFolderMenuItem(it.name, directoryViewer) { treeItem ->
+                    treeItemTypeService.markFolder(treeItem, it)
+                    treeItemTypeService.updateState()
+                    refreshDirectories()
+                }
+            }.toTypedArray()
         )
     }
 
-    private fun createMenuItem(
-        text: String,
-        directoryViewer: DirectoryViewer,
-        addSecurity: (TypeAwareTreeItem) -> Unit
-    ): MenuItem {
-        return MenuItem(text).apply {
-            onAction = EventHandler {
-                val file = directoryViewer.selectedItem ?: return@EventHandler
-                addSecurity(file)
-            }
-        }
+    fun updateContextMenu() {
+        sourceDirectoryViewer.contextMenu = createContextMenu(sourceDirectoryViewer)
+        targetDirectoryViewer.contextMenu = createContextMenu(targetDirectoryViewer)
     }
 
-    private fun validateSecurity(from: SecurityFolderType, to: SecurityFolderType) = from.privacy <= to.privacy
+    private fun validateSecurity(from: SecurityType, to: SecurityType) = from.priority <= to.priority
 
-    protected fun log(message: String, color: Color = Color.BLACK) {
-        status.text = message
-        status.textFill = color
+    protected open fun initializeCreateNewFolderSecurityTypeDropdown() {
+        securityTypeDropdown.items.addAll(*getDefaultSecurityTypes())
     }
+
+    protected open fun addDefaultSecurityTypes() {
+        securityTypeDao.save(*getDefaultSecurityTypes())
+    }
+
+    fun getDefaultSecurityTypes() = arrayOf(SecurityType.TOP_SECRET, SecurityType.SECRET, SecurityType.NON_SECRET)
 }

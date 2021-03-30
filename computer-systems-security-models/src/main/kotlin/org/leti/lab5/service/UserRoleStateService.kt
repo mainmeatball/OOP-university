@@ -1,21 +1,17 @@
 package org.leti.lab5.service
 
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.paint.Color
 import javafx.util.Callback
 import org.leti.lab4.service.ApplicationStateService
-import org.leti.lab5.component.table.NamePropertiesAware
-import org.leti.lab5.component.table.Role
-import org.leti.lab5.component.table.User
-import org.leti.lab5.component.table.UserRole
-import org.leti.lab5.controller.tab.RoleTabController
+import org.leti.lab5.component.*
 import org.leti.lab5.enums.UserActionType
 
 private const val USER_TABLE_NAME = "User"
+private const val ROLE_TABLE_NAME = "Role"
 private const val DELETE_BUTTON_NAME = "Delete"
 
 object UserRoleStateService {
@@ -25,8 +21,11 @@ object UserRoleStateService {
 
     val userList = mutableListOf<User>()
     val roleList = mutableListOf<Role>()
+    val securityList = mutableListOf<SecurityType>()
+    val securityMenuItems = mutableListOf<MenuItem>()
 
     var updateUserCallback: (User, UserActionType) -> Unit = { _, _ -> }
+    var updateSecurityTypeCallback: (UserActionType, Boolean, Array<out SecurityType>) -> Unit = { _, _, _ -> }
     var log: (String, Color) -> Unit = { _, _ -> }
 
     fun addUserItems(table: TableView<User>, vararg items: User) {
@@ -60,6 +59,24 @@ object UserRoleStateService {
 
     fun addRoleItemsAndSaveState(table: TableView<Role>, vararg items: Role) {
         addRoleItems(table, *items)
+        saveState()
+    }
+
+    fun addSecurityTypes(table: TableView<SecurityType>, vararg items: SecurityType) {
+        for (item in items) {
+            if (securityList.any { it.name == item.name }) {
+                log("Security type ${item.name} already exists", Color.RED)
+                continue
+            }
+            table.items.add(item)
+            securityList += item
+            addNewColumn<Role>(ROLE_TABLE_NAME, item.name)
+        }
+        updateSecurityTypeCallback(UserActionType.ADD, true, items)
+    }
+
+    fun addSecurityTypeAndSaveState(table: TableView<SecurityType>, vararg items: SecurityType) {
+        addSecurityTypes(table, *items)
         saveState()
     }
 
@@ -122,7 +139,17 @@ object UserRoleStateService {
         saveState()
     }
 
+    fun deleteSecurityTypes(table: TableView<SecurityType>, withRefresh: Boolean, vararg items: SecurityType) {
+        for (item in items) {
+            table.items.remove(item)
+            securityList.remove(item)
+            removeColumn<Role>(ROLE_TABLE_NAME, item.name)
+        }
+        updateSecurityTypeCallback(UserActionType.REMOVE, withRefresh, items)
+        saveState()
+    }
+
     fun saveState() {
-        appStateService.saveRolesUsersState(UserRole(userList, roleList))
+        appStateService.saveRolesUsersState(UserRole(userList, roleList, securityList))
     }
 }

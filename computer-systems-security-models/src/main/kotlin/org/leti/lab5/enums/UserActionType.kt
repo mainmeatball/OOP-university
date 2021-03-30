@@ -1,6 +1,6 @@
 package org.leti.lab5.enums
 
-import org.leti.lab5.component.table.User
+import org.leti.lab5.component.User
 
 enum class UserActionType(
     val func: MutableList<User>.(User) -> Boolean
