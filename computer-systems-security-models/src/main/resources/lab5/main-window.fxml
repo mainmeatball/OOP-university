@@ -30,7 +30,7 @@
                     <Region prefWidth="50.0" HBox.hgrow="ALWAYS"/>
                     <Label text="Enter new folder name: "/>
                     <TextField fx:id="newDirectoryName"/>
-                    <ComboBox fx:id="securityTypeDropdown" value="Non-secret"/>
+                    <ComboBox fx:id="securityTypeDropdown"/>
                     <Button fx:id="createDirectoryButton" text="Create" onAction="#createDirectory"/>
                 </HBox>
                 <Label fx:id="status"/>

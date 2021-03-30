@@ -60,7 +60,7 @@ open class DirectoryInitializationService {
                         absolutePath = directory.absolutePath + File.separator + f.name
                         type = TreeItemType.FOLDER
                     }
-                    markAsNonSecretFolder(dir)
+                    treeItemTypeService.markAsNonSecret(dir, getAvailableSecurityTypes())
                     if (allowDirectory(dir)) {
                         root.children.add(dir)
                     }
@@ -77,11 +77,11 @@ open class DirectoryInitializationService {
         return root
     }
 
-    fun markAsNonSecretFolder(dir: TypeAwareTreeItem) {
-        treeItemTypeService.markAsNonSecret(dir, false, getAvailableSecurityTypes())
-    }
+    protected open fun getAvailableSecurityTypes() = listOf("Top-secret", "Secret", "Non-secret")
 
-    open protected fun getAvailableSecurityTypes() = listOf("Top-secret", "Secret", "Non-secret")
+    protected open fun allowDirectory(dir: TypeAwareTreeItem): Boolean {
+        return true
+    }
 
     private fun getPreviousDirectory(directory: String): String {
         val separators = directory.count { it == '/' }
@@ -89,9 +89,5 @@ open class DirectoryInitializationService {
             return directory
         }
         return directory.substringBeforeLast('/')
-    }
-
-    open protected fun allowDirectory(dir: TypeAwareTreeItem): Boolean {
-        return true
     }
 }

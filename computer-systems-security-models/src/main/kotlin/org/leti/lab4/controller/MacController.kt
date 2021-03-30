@@ -36,7 +36,7 @@ open class MacController {
     lateinit var status: Label
 
     @FXML
-    protected open lateinit var securityTypeDropdown: ComboBox<SecurityType>
+    lateinit var securityTypeDropdown: ComboBox<SecurityType>
 
     @FXML
     lateinit var newDirectoryName: TextField
@@ -45,11 +45,11 @@ open class MacController {
 
     protected open val directoryInitializationService = DirectoryInitializationService()
 
+    protected val securityTypeDao = SecurityTypeDao()
+
     private val fileService = FileService()
 
     lateinit var lastChosenFilesystem: DirectoryViewer
-
-    private val securityTypeDao = SecurityTypeDao()
 
     @FXML
     open fun initialize() {
@@ -147,6 +147,7 @@ open class MacController {
 
     protected open fun initializeCreateNewFolderSecurityTypeDropdown() {
         securityTypeDropdown.items.addAll(*getDefaultSecurityTypes())
+        securityTypeDropdown.value = SecurityType.NON_SECRET
     }
 
     protected open fun addDefaultSecurityTypes() {

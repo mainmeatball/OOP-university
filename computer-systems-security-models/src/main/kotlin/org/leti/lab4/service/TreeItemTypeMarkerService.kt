@@ -26,10 +26,9 @@ object TreeItemTypeMarkerService {
 
     fun markAsNonSecret(
         treeItem: TypeAwareTreeItem,
-        withForce: Boolean = false,
         availableTypes: Collection<String>
     ) {
-        if (InMemoryStorage.hasFolder(treeItem.absolutePath) && !withForce) {
+        if (InMemoryStorage.hasFolder(treeItem.absolutePath)) {
             val cachedSecurityType = InMemoryStorage.getFolderSecurityType(treeItem.absolutePath)
             if (cachedSecurityType.name !in availableTypes) {
                 markFolder(treeItem, SecurityType.NON_SECRET)
