@@ -32,7 +32,6 @@ class MainController : MacController() {
     lateinit var currentUser: ComboBox<User>
 
     override fun initialize() {
-        println("Start initializing Main Controller")
         super.initialize()
         currentUser.items.addAll(InMemoryStorage.userSet)
         stateService.updateUserCallback = { user, action ->
@@ -52,7 +51,6 @@ class MainController : MacController() {
                 refreshDirectories()
             }
         }
-        println("Main Controller is initialized")
     }
 
     @FXML
@@ -75,6 +73,10 @@ class MainController : MacController() {
                 }
             }.toTypedArray()
         )
+    }
+
+    override fun addDefaultSecurityTypes() {
+        securityTypeDao.save(SecurityType.NON_SECRET)
     }
 
     private fun addNewSecurityType(vararg securityType: SecurityType) {

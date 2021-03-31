@@ -24,4 +24,17 @@ First of all, you must have at least `Java 11` installed on your computer.
    
 ## Application screenshots
 
-TODO: add screenshots
+![Initial state](../../../../../../demo/pics/lab5_init.png)
+
+![Security tab](../../../../../../demo/pics/lab5_security_tab.png)
+![Role tab](../../../../../../demo/pics/lab5_role_tab.png)
+![User tab](../../../../../../demo/pics/lab5_user_tab.png)
+
+![Full access](../../../../../../demo/pics/lab5_full.png)
+![Guest access](../../../../../../demo/pics/lab5_guest.png)
+![No access](../../../../../../demo/pics/lab5_no.png)
+
+
+
+
+

@@ -2,13 +2,18 @@ package org.leti.lab5.service
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
-import javafx.scene.control.*
+import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
+import javafx.scene.control.TableColumn
+import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.paint.Color
 import javafx.util.Callback
+import org.leti.lab4.dao.SecurityTypeDao
 import org.leti.lab4.service.ApplicationStateService
-import org.leti.lab4.storage.InMemoryStorage
 import org.leti.lab5.component.*
+import org.leti.lab5.dao.RoleDao
+import org.leti.lab5.dao.UserDao
 import org.leti.lab5.enums.UserActionType
 
 private const val USER_TABLE_NAME = "User"
@@ -24,6 +29,10 @@ object UserRoleStateService {
     var updateSecurityTypeCallback: (UserActionType, Boolean, Array<out SecurityType>) -> Unit = { _, _, _ -> }
     var log: (String, Color) -> Unit = { _, _ -> }
 
+    private val userDao = UserDao()
+    private val roleDao = RoleDao()
+    private val securityTypeDao = SecurityTypeDao()
+
     fun addUserItems(table: TableView<User>, vararg items: User) {
         for (item in items) {
             if (table.items.any { it.name == item.name }) {
@@ -31,7 +40,7 @@ object UserRoleStateService {
                 continue
             }
             table.items.add(item)
-            InMemoryStorage.userSet += item
+            userDao.save(item)
             updateUserCallback(item, UserActionType.ADD)
         }
     }
@@ -48,7 +57,7 @@ object UserRoleStateService {
                 continue
             }
             table.items.add(item)
-            InMemoryStorage.roleSet += item
+            roleDao.save(item)
             addNewColumn<User>(USER_TABLE_NAME, item.name)
         }
     }
@@ -65,7 +74,7 @@ object UserRoleStateService {
                 continue
             }
             table.items.add(item)
-            InMemoryStorage.securityTypeSet += item
+            securityTypeDao.save(item)
             addNewColumn<Role>(ROLE_TABLE_NAME, item.name)
         }
         updateSecurityTypeCallback(UserActionType.ADD, true, items)
@@ -124,11 +133,11 @@ object UserRoleStateService {
     private fun <T : NamePropertiesAware> deleteItem(table: TableView<T>, item: T) {
         table.items.remove(item)
         if (item is User) {
-            InMemoryStorage.userSet.remove(item)
+            userDao.remove(item)
             updateUserCallback(item, UserActionType.REMOVE)
         }
         if (item is Role) {
-            InMemoryStorage.roleSet.remove(item)
+            roleDao.remove(item)
             removeColumn<User>(USER_TABLE_NAME, item.name)
         }
         saveState()
@@ -137,7 +146,7 @@ object UserRoleStateService {
     fun deleteSecurityTypes(table: TableView<SecurityType>, withRefresh: Boolean, vararg items: SecurityType) {
         for (item in items) {
             table.items.remove(item)
-            InMemoryStorage.securityTypeSet.remove(item)
+            securityTypeDao.remove(item)
             removeColumn<Role>(ROLE_TABLE_NAME, item.name)
         }
         updateSecurityTypeCallback(UserActionType.REMOVE, withRefresh, items)
@@ -145,6 +154,6 @@ object UserRoleStateService {
     }
 
     fun saveState() {
-        appStateService.saveRolesUsersState(UserRole(InMemoryStorage.userSet, InMemoryStorage.roleSet, InMemoryStorage.securityTypeSet))
+        appStateService.saveRolesUsersState(UserRole(userDao.findAll(), roleDao.findAll(), securityTypeDao.findAll()))
     }
 }
