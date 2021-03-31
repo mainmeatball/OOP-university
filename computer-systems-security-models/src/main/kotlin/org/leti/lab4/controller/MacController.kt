@@ -1,27 +1,20 @@
 package org.leti.lab4.controller
 
-import javafx.collections.FXCollections
 import javafx.event.ActionEvent
-import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
-import javafx.util.Callback
 import org.leti.lab1.component.DirectoryViewer
 import org.leti.lab1.service.DirectoryInitializationService
 import org.leti.lab1.service.FileService
 import org.leti.lab4.component.MarkFolderMenuItem
-import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TreeItemType
-import org.leti.lab4.component.TypeAwareTreeItem
 import org.leti.lab4.dao.SecurityTypeDao
 import org.leti.lab4.service.LoggerService
 import org.leti.lab4.service.TreeItemTypeMarkerService
 import org.leti.lab4.storage.InMemoryStorage
-import org.leti.lab5.component.FolderColor
 import org.leti.lab5.component.SecurityType
-import org.leti.lab5.component.SecurityTypeListCell
 import java.io.File
 
 
@@ -34,16 +27,10 @@ open class MacController {
     lateinit var targetDirectoryViewer: DirectoryViewer
 
     @FXML
-    lateinit var copyFileButton: Button
-
-    @FXML
-    lateinit var createDirectoryButton: Button
-
-    @FXML
     lateinit var status: Label
 
     @FXML
-    protected open lateinit var securityTypeDropdown: ComboBox<SecurityType>
+    protected lateinit var securityTypeDropdown: ComboBox<SecurityType>
 
     @FXML
     lateinit var newDirectoryName: TextField
@@ -52,11 +39,11 @@ open class MacController {
 
     protected open val directoryInitializationService = DirectoryInitializationService()
 
+    protected val securityTypeDao = SecurityTypeDao()
+
     private val fileService = FileService()
 
     lateinit var lastChosenFilesystem: DirectoryViewer
-
-    private val securityTypeDao = SecurityTypeDao()
 
     @FXML
     open fun initialize() {
@@ -89,7 +76,7 @@ open class MacController {
         val fromSecurity = treeItemTypeService.resolveSecurityType(sourceDirectoryViewer.currentDirectory)
         val toSecurity = treeItemTypeService.resolveSecurityType(targetDirectoryViewer.currentDirectory)
         if (!validateSecurity(fromSecurity, toSecurity)) {
-            LoggerService.log("File copy from ${fromSecurity.name} to ${toSecurity.name} folder is not allowed", Color.RED)
+            LoggerService.error("File copy from ${fromSecurity.name} to ${toSecurity.name} folder is not allowed")
             return
         }
         LoggerService.log("File \"${sourceDirectoryViewer.selectedItem!!.value}\" successfully copied", Color.GREEN)
@@ -154,6 +141,7 @@ open class MacController {
 
     protected open fun initializeCreateNewFolderSecurityTypeDropdown() {
         securityTypeDropdown.items.addAll(*getDefaultSecurityTypes())
+        securityTypeDropdown.value = SecurityType.NON_SECRET
     }
 
     protected open fun addDefaultSecurityTypes() {

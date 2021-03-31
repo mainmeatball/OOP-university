@@ -3,9 +3,8 @@ package org.leti.lab5.controller.tab
 import javafx.fxml.FXML
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
-import org.leti.lab4.component.SecurityFolderType
+import org.leti.lab4.storage.InMemoryStorage
 import org.leti.lab5.component.Role
-import org.leti.lab5.component.User
 import org.leti.lab5.service.UserRoleStateService
 
 
@@ -21,11 +20,9 @@ class RoleTabController {
 
     @FXML
     fun initialize() {
-        val userRole = stateService.initializeTable(roleTable, ROLE_TABLE_NAME)
-        stateService.addRoleItems(roleTable, *userRole.roles.toTypedArray())
-        stateService.securityList.forEach {
-            stateService.addNewColumn<Role>(ROLE_TABLE_NAME, it.name)
-        }
+        println("Start initializing Role Tab Controller")
+        stateService.initializeTable(roleTable, ROLE_TABLE_NAME)
+        stateService.addRoleItems(roleTable, *InMemoryStorage.roleSet.toTypedArray())
         roleTable.isEditable = true
         println("Role Tab Controller is initialized")
     }

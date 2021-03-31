@@ -1,13 +1,11 @@
 package org.leti.lab5.service
 
 import org.leti.lab1.service.DirectoryInitializationService
-import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab4.component.TypeAwareTreeItem
+import org.leti.lab4.storage.InMemoryStorage
 import org.leti.lab5.component.User
 
 class UserAwareDirectoryInitializationService : DirectoryInitializationService() {
-
-    private val stateService = UserRoleStateService
 
     lateinit var currentUser: User
 
@@ -17,7 +15,7 @@ class UserAwareDirectoryInitializationService : DirectoryInitializationService()
             return true
         }
         val securityFolderType = dir.security
-        val roles = stateService.roleList.associateBy { it.name }
+        val roles = InMemoryStorage.roleSet.associateBy { it.name }
         return currentUser.properties.entries.asSequence()
             .filter { it.value }
             .map { roles[it.key] }
@@ -25,9 +23,9 @@ class UserAwareDirectoryInitializationService : DirectoryInitializationService()
             .flatMap { it.properties.entries }
             .filter { it.value }
             .map { it.key }
-            .map { stateService.securityList.find { item -> item.name == it } }
+            .map { InMemoryStorage.securityTypeSet.find { item -> item.name == it } }
             .any { it == securityFolderType }
     }
 
-    override fun getAvailableSecurityTypes() = stateService.securityList.map { it.name }
+    override fun getAvailableSecurityTypes() = InMemoryStorage.securityTypeSet.map { it.name }
 }

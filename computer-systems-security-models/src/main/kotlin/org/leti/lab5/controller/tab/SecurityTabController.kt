@@ -9,6 +9,7 @@ import javafx.scene.paint.Color
 import javafx.util.Callback
 import org.leti.lab4.service.ApplicationStateService
 import org.leti.lab4.service.LoggerService
+import org.leti.lab4.storage.InMemoryStorage
 import org.leti.lab5.component.FolderColor
 import org.leti.lab5.component.SecurityType
 import org.leti.lab5.component.SecurityTypeListCell
@@ -27,6 +28,7 @@ class SecurityTabController {
 
     @FXML
     fun initialize() {
+        println("Start initializing Security Tab Controller")
         val columns = securityTypeTable.columns
         val deleteColumn = TableColumn<SecurityType, Button>("Delete").apply {
             cellValueFactory = Callback {
@@ -81,15 +83,17 @@ class SecurityTabController {
             }
         }
         columns += priorityColumn
-        val state = ApplicationStateService.fetchRolesUsersState()
-        stateService.addSecurityTypeAndSaveState(securityTypeTable, *state.security.sortedByDescending { it.priority }.toTypedArray())
+        stateService.addSecurityTypeAndSaveState(securityTypeTable, *InMemoryStorage.securityTypeSet.sortedByDescending { it.priority }.toTypedArray())
         println("Security Tab Controller is initialized")
     }
 
 
     @FXML
     fun createNewSecurityType() {
-        val newSecurityTypeName = securityName.text ?: return
+        val newSecurityTypeName = securityName.text
+        if (newSecurityTypeName.isNullOrBlank()) {
+            LoggerService.error("Enter valid security type")
+        }
         securityName.clear()
         val newColor = uniqueColors().first()
         stateService.addSecurityTypeAndSaveState(securityTypeTable, SecurityType(newSecurityTypeName, 0, newColor))
@@ -111,12 +115,12 @@ class SecurityTabController {
     private fun validateItems(items: List<SecurityType>): Boolean {
         val hasDuplicatedColor = items.groupingBy { it.color }.eachCount().any { it.value > 1 }
         if (hasDuplicatedColor) {
-            LoggerService.log("Please, choose another folder color", Color.RED)
+            LoggerService.error("Please, choose another folder color")
             return false
         }
         val hasDuplicatedPriority = items.groupingBy { it.priority }.eachCount().any { it.value > 1 }
         if (hasDuplicatedPriority) {
-            LoggerService.log("Please, choose another security priority", Color.RED)
+            LoggerService.error("Please, choose another security priority")
             return false
         }
         LoggerService.log("Security type state saved", Color.GREEN)

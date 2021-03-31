@@ -1,7 +1,6 @@
 package org.leti.lab4.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.leti.lab4.component.SecurityFolderType
 import org.leti.lab5.component.FolderColor
 import org.leti.lab5.component.SecurityType
 import org.leti.lab5.component.UserRole

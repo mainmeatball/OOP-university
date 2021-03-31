@@ -7,6 +7,7 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.paint.Color
 import javafx.util.Callback
 import org.leti.lab4.service.ApplicationStateService
+import org.leti.lab4.storage.InMemoryStorage
 import org.leti.lab5.component.*
 import org.leti.lab5.enums.UserActionType
 
@@ -19,23 +20,18 @@ object UserRoleStateService {
     private val appStateService = ApplicationStateService
     private val tableMap = mutableMapOf<String, TableView<out NamePropertiesAware>>()
 
-    val userList = mutableListOf<User>()
-    val roleList = mutableListOf<Role>()
-    val securityList = mutableListOf<SecurityType>()
-    val securityMenuItems = mutableListOf<MenuItem>()
-
     var updateUserCallback: (User, UserActionType) -> Unit = { _, _ -> }
     var updateSecurityTypeCallback: (UserActionType, Boolean, Array<out SecurityType>) -> Unit = { _, _, _ -> }
     var log: (String, Color) -> Unit = { _, _ -> }
 
     fun addUserItems(table: TableView<User>, vararg items: User) {
         for (item in items) {
-            if (userList.any { it.name == item.name }) {
+            if (table.items.any { it.name == item.name }) {
                 log("User ${item.name} already exists", Color.RED)
                 continue
             }
             table.items.add(item)
-            userList += item
+            InMemoryStorage.userSet += item
             updateUserCallback(item, UserActionType.ADD)
         }
     }
@@ -47,12 +43,12 @@ object UserRoleStateService {
 
     fun addRoleItems(table: TableView<Role>, vararg items: Role) {
         for (item in items) {
-            if (roleList.any { it.name == item.name }) {
+            if (table.items.any { it.name == item.name }) {
                 log("Role ${item.name} already exists", Color.RED)
                 continue
             }
             table.items.add(item)
-            roleList += item
+            InMemoryStorage.roleSet += item
             addNewColumn<User>(USER_TABLE_NAME, item.name)
         }
     }
@@ -64,12 +60,12 @@ object UserRoleStateService {
 
     fun addSecurityTypes(table: TableView<SecurityType>, vararg items: SecurityType) {
         for (item in items) {
-            if (securityList.any { it.name == item.name }) {
+            if (table.items.any { it.name == item.name }) {
                 log("Security type ${item.name} already exists", Color.RED)
                 continue
             }
             table.items.add(item)
-            securityList += item
+            InMemoryStorage.securityTypeSet += item
             addNewColumn<Role>(ROLE_TABLE_NAME, item.name)
         }
         updateSecurityTypeCallback(UserActionType.ADD, true, items)
@@ -80,7 +76,7 @@ object UserRoleStateService {
         saveState()
     }
 
-    fun <T : NamePropertiesAware> initializeTable(table: TableView<T>, tableName: String): UserRole {
+    fun <T : NamePropertiesAware> initializeTable(table: TableView<T>, tableName: String) {
         val columns = table.columns
         val deleteColumn = TableColumn<T, Button>(DELETE_BUTTON_NAME).apply {
             cellValueFactory = Callback {
@@ -98,7 +94,6 @@ object UserRoleStateService {
         }
         columns += nameColumn
         tableMap[tableName] = table
-        return appStateService.fetchRolesUsersState()
     }
 
     fun <T : NamePropertiesAware> addNewColumn(tableName: String, name: String) {
@@ -129,11 +124,11 @@ object UserRoleStateService {
     private fun <T : NamePropertiesAware> deleteItem(table: TableView<T>, item: T) {
         table.items.remove(item)
         if (item is User) {
-            userList.remove(item)
+            InMemoryStorage.userSet.remove(item)
             updateUserCallback(item, UserActionType.REMOVE)
         }
         if (item is Role) {
-            roleList.remove(item)
+            InMemoryStorage.roleSet.remove(item)
             removeColumn<User>(USER_TABLE_NAME, item.name)
         }
         saveState()
@@ -142,7 +137,7 @@ object UserRoleStateService {
     fun deleteSecurityTypes(table: TableView<SecurityType>, withRefresh: Boolean, vararg items: SecurityType) {
         for (item in items) {
             table.items.remove(item)
-            securityList.remove(item)
+            InMemoryStorage.securityTypeSet.remove(item)
             removeColumn<Role>(ROLE_TABLE_NAME, item.name)
         }
         updateSecurityTypeCallback(UserActionType.REMOVE, withRefresh, items)
@@ -150,6 +145,6 @@ object UserRoleStateService {
     }
 
     fun saveState() {
-        appStateService.saveRolesUsersState(UserRole(userList, roleList, securityList))
+        appStateService.saveRolesUsersState(UserRole(InMemoryStorage.userSet, InMemoryStorage.roleSet, InMemoryStorage.securityTypeSet))
     }
 }

@@ -13,10 +13,6 @@ object TreeItemTypeMarkerService {
 
     private val fileIcon = Image(javaClass.classLoader.getResourceAsStream("images/file-icon.png"))
 
-    init {
-        InMemoryStorage.dirSecurityTypeCache.putAll(appStateService.fetchState())
-    }
-
     fun markAsFile(treeItem: TypeAwareTreeItem) {
         if (treeItem.type != TreeItemType.FILE) {
             return
@@ -26,10 +22,9 @@ object TreeItemTypeMarkerService {
 
     fun markAsNonSecret(
         treeItem: TypeAwareTreeItem,
-        withForce: Boolean = false,
         availableTypes: Collection<String>
     ) {
-        if (InMemoryStorage.hasFolder(treeItem.absolutePath) && !withForce) {
+        if (InMemoryStorage.hasFolder(treeItem.absolutePath)) {
             val cachedSecurityType = InMemoryStorage.getFolderSecurityType(treeItem.absolutePath)
             if (cachedSecurityType.name !in availableTypes) {
                 markFolder(treeItem, SecurityType.NON_SECRET)
