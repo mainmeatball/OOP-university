@@ -27,16 +27,44 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'org.leti.lab5.MainKt'
+sourceSets {
+    main.java.srcDirs = ['src/main/kotlin', 'src/main/java']
 
-jar {
-    manifest {
-        attributes 'Main-Class': "${mainClassName}"
+}
+
+def jarPackage(artifactName, artifactVersion) {
+    if (artifactVersion == "" || artifactVersion == null) {
+        artifactVersion = "1.0.0"
     }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    return tasks.create("jar${artifactName}", Jar) {
+        archiveVersion.set(artifactVersion)
+        String mainClassName = ""
+        if (artifactName == "lab4") {
+            archiveBaseName.set("mandatory_access_control")
+            mainClassName = "org.leti.lab4.MainKt"
+        }
+        if (artifactName == "lab5") {
+            archiveBaseName.set("role_access_control")
+            mainClassName = "org.leti.lab5.MainKt"
+        }
+        setMainClassName(mainClassName)
+
+        from(sourceSets.main.output) {
+            include "**"
+        }
+
+        from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+
+        manifest {
+            attributes "Implementation-Title": "$mainClassName",
+                    "Implementation-Version": "$archiveVersion",
+                    "Main-Class": "$mainClassName"
+        }
     }
-    archivesBaseName = 'role_access_control'
+}
+
+artifacts {
+    archives jarPackage("lab4", ""), jarPackage("lab5", "")
 }
 
 compileKotlin {
