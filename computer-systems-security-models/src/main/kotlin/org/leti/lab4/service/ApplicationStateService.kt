@@ -18,18 +18,26 @@ object ApplicationStateService {
 
     fun saveState(stateMap: Map<String, SecurityType>) {
         val stateFile = getStateFile()
-        stateFile?.createNewFile() ?: return
+        if (!stateFile.exists()) {
+            stateFile.createNewFile()
+        }
         mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, stateMap)
     }
 
     fun saveRolesUsersState(stateMap: UserRole) {
         val stateFile = getRoleStateFile()
-        stateFile?.createNewFile() ?: return
+        if (!stateFile.exists()) {
+            stateFile.createNewFile()
+        }
         mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, stateMap)
     }
 
     fun fetchState(): Map<String, SecurityType> {
-        val stateFile = getStateFile() ?: return mapOf()
+        val stateFile = getStateFile()
+        if (!stateFile.exists()) {
+            stateFile.createNewFile()
+            mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, mapOf<String, SecurityType>())
+        }
         val stateMap = mapper.readValue(stateFile, Map::class.java)
         return stateMap.entries
             .associate {
@@ -39,7 +47,7 @@ object ApplicationStateService {
     }
 
     fun fetchRolesUsersState(): UserRole {
-        val stateFile = getRoleStateFile() ?: return UserRole()
+        val stateFile = getRoleStateFile()
         if (!stateFile.exists()) {
             stateFile.createNewFile()
             mapper.writerWithDefaultPrettyPrinter().writeValue(stateFile, UserRole())
@@ -47,23 +55,18 @@ object ApplicationStateService {
         return mapper.readValue(stateFile, UserRole::class.java)
     }
 
-    private fun getStateFile(): File? {
+    private fun getStateFile(): File {
         return doGetStateFile(JAR_APP_STATE_FILE, STATE_FILE)
     }
 
-    private fun getRoleStateFile(): File? {
+    private fun getRoleStateFile(): File {
         return doGetStateFile(JAR_APP_ROLES_FILE, ROLES_FILE)
     }
 
-    private fun doGetStateFile(jarAppFile: String, ideaFile: String): File? {
+    private fun doGetStateFile(jarAppFile: String, ideaFile: String): File {
         val stateFolder = File(JAR_APP_STATE_FOLDER)
         if (stateFolder.exists()) {
-            val stateFile = File(jarAppFile)
-            return if (stateFile.exists()) {
-                stateFile
-            } else {
-                null
-            }
+            return File(jarAppFile)
         }
         return File(ideaFile)
     }
