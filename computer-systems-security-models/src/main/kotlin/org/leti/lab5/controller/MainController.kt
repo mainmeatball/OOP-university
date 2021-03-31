@@ -57,8 +57,10 @@ class MainController : MacController() {
 
     @FXML
     fun updateView() {
-        val user = currentUser.selectionModel.selectedItem ?: return
-        directoryInitializationService.currentUser = user
+        val user = currentUser.selectionModel.selectedItem
+        if (user != null) {
+            directoryInitializationService.currentUser = user
+        }
         updateContextMenu()
         refreshDirectories()
     }
@@ -76,19 +78,23 @@ class MainController : MacController() {
     }
 
     private fun addNewSecurityType(vararg securityType: SecurityType) {
-        for (it in securityType) {
+        for (secType in securityType) {
             val hBox = HBox().apply {
-                id = it.name
-                children.add(ImageView(it.color.pictureName))
-                children.add(Text(" -- ${it.name}"))
+                id = secType.name
+                children.add(ImageView(secType.color.pictureName))
+                children.add(Text(" -- ${secType.name}"))
             }
             securityTypeList.children.add(hBox)
+            if (!securityTypeDropdown.items.contains(secType)) {
+                securityTypeDropdown.items.add(secType)
+            }
         }
     }
 
     private fun removeSecurityType(vararg securityType: SecurityType) {
         for (secType in securityType) {
             securityTypeList.children.removeIf { it.id == secType.name }
+            securityTypeDropdown.items.remove(secType)
         }
     }
 }

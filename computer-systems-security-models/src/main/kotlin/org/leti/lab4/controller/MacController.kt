@@ -27,16 +27,10 @@ open class MacController {
     lateinit var targetDirectoryViewer: DirectoryViewer
 
     @FXML
-    lateinit var copyFileButton: Button
-
-    @FXML
-    lateinit var createDirectoryButton: Button
-
-    @FXML
     lateinit var status: Label
 
     @FXML
-    lateinit var securityTypeDropdown: ComboBox<SecurityType>
+    protected lateinit var securityTypeDropdown: ComboBox<SecurityType>
 
     @FXML
     lateinit var newDirectoryName: TextField

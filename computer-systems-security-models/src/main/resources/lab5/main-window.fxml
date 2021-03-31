@@ -25,13 +25,13 @@
         <HBox alignment="CENTER_LEFT">
             <VBox fx:id="securityTypeList"/>
             <VBox spacing="16" alignment="CENTER" minWidth="490">
-                <Button fx:id="copyFileButton" text="Copy" onAction="#copyFile"/>
+                <Button text="Copy" onAction="#copyFile"/>
                 <HBox spacing="6" alignment="CENTER">
-                    <Region prefWidth="50.0" HBox.hgrow="ALWAYS"/>
-                    <Label text="Enter new folder name: "/>
+                    <Region prefWidth="20.0" HBox.hgrow="ALWAYS"/>
+                    <Label text="New folder name: "/>
                     <TextField fx:id="newDirectoryName"/>
                     <ComboBox fx:id="securityTypeDropdown"/>
-                    <Button fx:id="createDirectoryButton" text="Create" onAction="#createDirectory"/>
+                    <Button text="Create" onAction="#createDirectory"/>
                 </HBox>
                 <Label fx:id="status"/>
             </VBox>
