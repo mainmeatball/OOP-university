@@ -1,6 +1,8 @@
 package org.leti.lab5.component
 
-interface NamePropertiesAware {
+import java.io.Serializable
+
+interface NamePropertiesAware : Serializable {
     val name: String
     val properties: MutableMap<String, Boolean>
 }

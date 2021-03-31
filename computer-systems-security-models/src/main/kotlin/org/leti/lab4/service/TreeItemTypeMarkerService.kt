@@ -13,10 +13,6 @@ object TreeItemTypeMarkerService {
 
     private val fileIcon = Image(javaClass.classLoader.getResourceAsStream("images/file-icon.png"))
 
-    init {
-        InMemoryStorage.dirSecurityTypeCache.putAll(appStateService.fetchState())
-    }
-
     fun markAsFile(treeItem: TypeAwareTreeItem) {
         if (treeItem.type != TreeItemType.FILE) {
             return

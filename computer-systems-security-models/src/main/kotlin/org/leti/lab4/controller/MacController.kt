@@ -82,7 +82,7 @@ open class MacController {
         val fromSecurity = treeItemTypeService.resolveSecurityType(sourceDirectoryViewer.currentDirectory)
         val toSecurity = treeItemTypeService.resolveSecurityType(targetDirectoryViewer.currentDirectory)
         if (!validateSecurity(fromSecurity, toSecurity)) {
-            LoggerService.log("File copy from ${fromSecurity.name} to ${toSecurity.name} folder is not allowed", Color.RED)
+            LoggerService.error("File copy from ${fromSecurity.name} to ${toSecurity.name} folder is not allowed")
             return
         }
         LoggerService.log("File \"${sourceDirectoryViewer.selectedItem!!.value}\" successfully copied", Color.GREEN)

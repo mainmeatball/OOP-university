@@ -14,7 +14,7 @@
     <HBox spacing="10">
         <Label text="Current user" minWidth="80"/>
         <ComboBox fx:id="currentUser" onAction="#updateView"/>
-        <Region prefWidth="400" HBox.hgrow="ALWAYS"/>
+        <Region prefWidth="350" HBox.hgrow="ALWAYS"/>
         <Button text="Refresh" onAction="#updateView" prefWidth="70"/>
     </HBox>
     <VBox alignment="CENTER" spacing="10">
