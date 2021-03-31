@@ -7,6 +7,7 @@ import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.paint.Color
 import javafx.util.Callback
+import org.leti.lab4.dao.SecurityTypeDao
 import org.leti.lab4.service.ApplicationStateService
 import org.leti.lab4.service.LoggerService
 import org.leti.lab4.storage.InMemoryStorage
@@ -20,6 +21,8 @@ class SecurityTabController {
 
     private val stateService = UserRoleStateService
 
+    private val securityTypeDao = SecurityTypeDao()
+
     @FXML
     lateinit var securityTypeTable: TableView<SecurityType>
 
@@ -28,7 +31,6 @@ class SecurityTabController {
 
     @FXML
     fun initialize() {
-        println("Start initializing Security Tab Controller")
         val columns = securityTypeTable.columns
         val deleteColumn = TableColumn<SecurityType, Button>("Delete").apply {
             cellValueFactory = Callback {
@@ -60,7 +62,6 @@ class SecurityTabController {
                     }
                     selectionModel.selectedItemProperty().addListener { _, _, newVal ->
                         entity.color = newVal
-                        println("chosen $newVal")
                     }
                 }
                 SimpleObjectProperty(comboBox)
@@ -73,7 +74,6 @@ class SecurityTabController {
                 val textField = TextField().apply {
                     text = entity.priority.toString()
                     textProperty().addListener { _, _, newValue ->
-                        println("New priority chosen $newValue")
                         if (newValue.isNotEmpty()) {
                             entity.priority = newValue.toInt()
                         }
@@ -83,8 +83,7 @@ class SecurityTabController {
             }
         }
         columns += priorityColumn
-        stateService.addSecurityTypeAndSaveState(securityTypeTable, *InMemoryStorage.securityTypeSet.sortedByDescending { it.priority }.toTypedArray())
-        println("Security Tab Controller is initialized")
+        stateService.addSecurityTypeAndSaveState(securityTypeTable, *getSecurityTypes().toTypedArray())
     }
 
 
@@ -97,6 +96,7 @@ class SecurityTabController {
         securityName.clear()
         val newColor = uniqueColors().first()
         stateService.addSecurityTypeAndSaveState(securityTypeTable, SecurityType(newSecurityTypeName, 0, newColor))
+        LoggerService.success("Security type $newSecurityTypeName was successfully created")
     }
 
     @FXML
@@ -129,5 +129,12 @@ class SecurityTabController {
 
     private fun uniqueColors(): List<FolderColor> {
         return FolderColor.values().filter { it !in securityTypeTable.items.map(SecurityType::color) }
+    }
+
+    private fun getSecurityTypes(): Collection<SecurityType> {
+        if (securityTypeDao.findAll().isEmpty()) {
+            securityTypeDao.save(SecurityType.NON_SECRET)
+        }
+        return securityTypeDao.findAll()
     }
 }

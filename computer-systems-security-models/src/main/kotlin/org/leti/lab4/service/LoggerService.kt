@@ -16,4 +16,9 @@ object LoggerService {
         label.text = message
         label.textFill = Color.RED
     }
+
+    fun success(message: String) {
+        label.text = message
+        label.textFill = Color.GREEN
+    }
 }
